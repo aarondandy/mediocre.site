@@ -101,11 +101,15 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="things\ThingIndexItem.cs" />
+    <Compile Include="things\ThingIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="views\_SiteLayout.cshtml" />
     <Content Include="default.cshtml" />
+    <Content Include="things\thing1\default.cshtml" />
+    <Content Include="things\thing2\default.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

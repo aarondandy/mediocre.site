@@ -1,5 +1,11 @@
-﻿@inherits ServiceStack.Razor.ViewPage
+﻿@inherits ServiceStack.Razor.ViewPage<MediocreWeb.things.ThingIndex>
 @{
   ViewBag.PageTitle = "Some things I have made";
 }
 This is the default page.
+
+<ul>
+@foreach (var thing in Model.AllThings) {
+  <li><a href="things/@thing.Id">@thing.Title</a></li>
+}
+</ul>

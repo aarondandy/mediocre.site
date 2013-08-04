@@ -1,4 +1,5 @@
 ﻿using System;
+using MediocreWeb.things;
 using ServiceStack.Razor;
 using ServiceStack.Text;
 using ServiceStack.WebHost.Endpoints;
@@ -15,6 +16,8 @@ namespace MediocreWeb
             public override void Configure(Funq.Container container) {
                 Plugins.Add(new RazorFormat());
                 JsConfig.EmitCamelCaseNames = true;
+
+                container.Register(_ => new ThingIndex());
             }
         }
 
