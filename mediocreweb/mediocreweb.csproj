@@ -112,6 +112,7 @@
     <Content Include="default.cshtml" />
     <Content Include="things\thing1\default.cshtml" />
     <Content Include="things\thing2\default.cshtml" />
+    <Content Include="things\thing1\metadata.json" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -16,7 +16,7 @@ namespace MediocreWeb
             public override void Configure(Funq.Container container) {
                 Plugins.Add(new RazorFormat());
                 JsConfig.EmitCamelCaseNames = true;
-
+                JsConfig.DateHandler = JsonDateHandler.ISO8601;
                 container.Register(_ => new ThingIndex());
             }
         }
