@@ -89,13 +89,70 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="css\bootstrap-theme.css" />
+    <Content Include="css\bootstrap-theme.min.css" />
     <Content Include="css\bootstrap.css" />
     <Content Include="css\bootstrap.min.css" />
+    <Content Include="css\sh\scrollbarHack.css" />
+    <Content Include="css\sh\shCore.css" />
+    <Content Include="css\sh\shCoreDefault.css" />
+    <Content Include="css\sh\shCoreDjango.css" />
+    <Content Include="css\sh\shCoreEclipse.css" />
+    <Content Include="css\sh\shCoreEmacs.css" />
+    <Content Include="css\sh\shCoreFadeToGrey.css" />
+    <Content Include="css\sh\shCoreMDUltra.css" />
+    <Content Include="css\sh\shCoreMidnight.css" />
+    <Content Include="css\sh\shCoreRDark.css" />
+    <Content Include="css\sh\shThemeDefault.css" />
+    <Content Include="css\sh\shThemeDjango.css" />
+    <Content Include="css\sh\shThemeEclipse.css" />
+    <Content Include="css\sh\shThemeEmacs.css" />
+    <Content Include="css\sh\shThemeFadeToGrey.css" />
+    <Content Include="css\sh\shThemeMDUltra.css" />
+    <Content Include="css\sh\shThemeMidnight.css" />
+    <Content Include="css\sh\shThemeRDark.css" />
+    <Content Include="css\sh\shThemeVS2012Dark.css" />
+    <Content Include="css\sh\shThemeVS2012Light.css" />
+    <Content Include="css\site.css" />
+    <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="js\bootstrap.js" />
     <Content Include="js\bootstrap.min.js" />
     <Content Include="js\jquery-1.10.2.js" />
     <Content Include="js\jquery-1.10.2.min.js" />
+    <Content Include="js\sh\shAutoloader.js" />
+    <Content Include="js\sh\shBrushAppleScript.js" />
+    <Content Include="js\sh\shBrushAS3.js" />
+    <Content Include="js\sh\shBrushBash.js" />
+    <Content Include="js\sh\shBrushColdFusion.js" />
+    <Content Include="js\sh\shBrushCpp.js" />
+    <Content Include="js\sh\shBrushCSharp.js" />
+    <Content Include="js\sh\shBrushCss.js" />
+    <Content Include="js\sh\shBrushDelphi.js" />
+    <Content Include="js\sh\shBrushDiff.js" />
+    <Content Include="js\sh\shBrushErlang.js" />
+    <Content Include="js\sh\shBrushGroovy.js" />
+    <Content Include="js\sh\shBrushJava.js" />
+    <Content Include="js\sh\shBrushJavaFX.js" />
+    <Content Include="js\sh\shBrushJScript.js" />
+    <Content Include="js\sh\shBrushPerl.js" />
+    <Content Include="js\sh\shBrushPhp.js" />
+    <Content Include="js\sh\shBrushPlain.js" />
+    <Content Include="js\sh\shBrushPowerShell.js" />
+    <Content Include="js\sh\shBrushPython.js" />
+    <Content Include="js\sh\shBrushRuby.js" />
+    <Content Include="js\sh\shBrushSass.js" />
+    <Content Include="js\sh\shBrushScala.js" />
+    <Content Include="js\sh\shBrushSql.js" />
+    <Content Include="js\sh\shBrushVb.js" />
+    <Content Include="js\sh\shBrushXml.js" />
+    <Content Include="js\sh\shCore.js" />
+    <Content Include="js\sh\shLegacy.js" />
+    <Content Include="things\garbage-file\2012-dark-for-2010-preview-thumb.jpg" />
+    <Content Include="things\garbage-file\2012-dark-for-2010-preview.jpg" />
+    <Content Include="things\garbage-file\blank_servicestack_metadata.png" />
+    <Content Include="things\garbage-file\servicestack-json-metadata.PNG" />
+    <Content Include="things\garbage-file\servicestack-metadata.png" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -103,16 +160,22 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="things\ThingIndexItem.cs" />
+    <Compile Include="things\ThingMetadata.cs" />
     <Compile Include="things\ThingIndex.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
     <Content Include="views\_SiteLayout.cshtml" />
     <Content Include="default.cshtml" />
-    <Content Include="things\thing1\default.cshtml" />
-    <Content Include="things\thing2\default.cshtml" />
-    <Content Include="things\thing1\metadata.json" />
+    <Content Include="things\export-visual-studio-colors-for-syntaxhighlighter.cshtml" />
+    <Content Include="things\simple-readable-csharp-micro-optimization-expression-operand-ordering.cshtml" />
+    <Content Include="things\what-i-learned-about-writing-resharper-plugins.cshtml" />
+    <Content Include="things\visual-studio-2012-styles-for-2010.cshtml" />
+    <Content Include="fonts\glyphicons-halflings-regular.eot" />
+    <Content Include="fonts\glyphicons-halflings-regular.ttf" />
+    <Content Include="fonts\glyphicons-halflings-regular.woff" />
+    <Content Include="things\garbage-file\default.cshtml" />
+    <Content Include="things\servicestack-quick-start.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -121,6 +184,7 @@
     </None>
     <Content Include="_Layout.cshtml" />
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

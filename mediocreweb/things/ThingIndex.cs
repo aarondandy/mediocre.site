@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Hosting;
 
 namespace MediocreWeb.things
@@ -11,22 +10,38 @@ namespace MediocreWeb.things
     {
 
         public static string ThingsDirectoryPath {
-            get { return HostingEnvironment.MapPath("~/things/"); }
+            get {
+                return HostingEnvironment.MapPath("~/things/");
+            }
         }
 
         public static DirectoryInfo ThingsDirectory {
             get { return new DirectoryInfo(ThingsDirectoryPath); }
         }
 
-        public static ThingIndexItem[] GetAllThings() {
-            return Array.ConvertAll(ThingsDirectory.GetDirectories(), di => new ThingIndexItem(di));
+        public static IEnumerable<ThingMetadata> GetAllThings() {
+            var thingsDirectory = ThingsDirectory;
+
+            var validSubDirectories = thingsDirectory
+                .GetDirectories()
+                .Where(d => d.GetFiles("default.cshtml").Any())
+                .Select(ThingMetadata.Create);
+
+            var validRootThings = thingsDirectory
+                .GetFiles("*.cshtml")
+                .Select(ThingMetadata.Create);
+
+            return validSubDirectories
+                .Concat(validRootThings)
+                .OrderByDescending(t => t.DateTime)
+                .ThenBy(t => t.Title);
         }
 
         public ThingIndex() {
             AllThings = GetAllThings().ToArray();
         }
 
-        public ThingIndexItem[] AllThings { get; private set; }
+        public ThingMetadata[] AllThings { get; private set; }
 
     }
 }

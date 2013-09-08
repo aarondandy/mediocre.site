@@ -1,0 +1,279 @@
+﻿@inherits ServiceStack.Razor.ViewPage
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/shCore.css")"/>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/shThemeVS2012Light.css")"/>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/scrollbarHack.css")"/>   
+<style type="text/css">
+  .how-i-do-it {
+    position: relative;
+    padding-top: 40px;
+  }
+  .how-i-do-it:after {
+    content: "How I do it:";
+    position: absolute;
+    top: 15px;
+    color: #888;
+  }
+</style>
+
+<p class="lead">
+  If you are a .NET developer and you need to make web services I want you to try ServiceStack <strong>right now</strong>.
+  Give me twenty minutes of your time and I will show you a glimpse of the basic features ServiceStack has to offer and how to use them.
+</p>
+
+<h2>Project Setup</h2>
+
+<h3>Make a Project</h3>
+<p>
+  Start off by making a new &quot;ASP.NET Empty Web Application&quot; however you feel comfortable.
+</p>
+<div class="well how-i-do-it">
+  <ol>
+    <li>Within Visual Studio navigate to <span class="label label-primary">File</span> &darr; <span class="label label-primary">New</span> &rarr; <span class="label label-primary">Project...</span></li>
+    <li>On the left navigate to <span class="label label-primary">Templates</span> &darr; <span class="label label-primary">Other Project Types</span> &darr; <span class="label label-primary">Visual Studio Solutions</span></li>
+    <li>Select the <b>Blank Solution</b> template, give it a name, then click the <span class="label label-default">OK</span> button</li>
+    <li>In your Solution Explorer right click the solution and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Project...</span></li>
+    <li>In the top-right search box enter <b>ASP.NET Empty Web Application</b> and select the C# variant</li>
+    <li>Make sure to select .NET Framework 4 or newer at the top</li>
+    <li>Give the project a name and click <span class="label label-default">OK</span></li>
+  </ol>
+</div>
+
+<h3>Reference ServiceStack</h3>
+<p>
+  Next we need to download and reference ServiceStack. The best way to do this is through NuGet.
+  If you don't have NuGet (Visual Studio before 2012) you can head over to the <a href="http://www.nuget.org/">NuGet website</a> to get it.
+  While we are adding ServiceStack lets add ServiceStack.Razor as well, it's neat.
+</p>
+<div class="well how-i-do-it">
+  <ol>
+    <li>Right click on your web project and select <span class="label label-primary">Manage NuGet Packages...</span></li>
+    <li>Within the left pane select <span class="label label-primary">NuGet official package source</span> under the <span class="label label-primary">Online</span> category</li>
+    <li>Search in the top-right for <b>ServiceStack</b></li>
+    <li>
+      Select then click the Install button for the following packages:
+      <ul>
+        <li>ServiceStack webservice framework: Faster, Cleaner, Modern WCF alternative (<i>ServiceStack</i>)</li>
+        <li>ServiceStack.Razor - ServiceStack's HTML story including MVC Razor (<i>ServiceStack.Razor</i>)</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<h3>Perform the Web.config Ceremony</h3>
+<p>
+  While ServiceStack isn't big on using configuration files we still need to tell ASP.NET to handle requests with ServiceStack.
+  Either merge or replace your <b>Web.config</b> with the following config XML.
+</p>
+<pre class="brush: xml">&lt;?xml version=&quot;1.0&quot;?&gt;
+&lt;configuration&gt;
+  &lt;system.web&gt;
+    &lt;compilation debug=&quot;true&quot; targetFramework=&quot;4.0&quot;&gt;
+      &lt;assemblies&gt;
+        &lt;add assembly=&quot;System.Web.WebPages.Razor, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31BF3856AD364E35&quot; /&gt;
+      &lt;/assemblies&gt;
+      &lt;buildProviders&gt;
+        &lt;add extension=&quot;.cshtml&quot; type=&quot;ServiceStack.Razor.CSharpRazorBuildProvider, ServiceStack.Razor&quot; /&gt;
+      &lt;/buildProviders&gt;
+    &lt;/compilation&gt;
+  &lt;/system.web&gt;
+  &lt;system.webServer&gt;
+    &lt;handlers&gt;
+      &lt;add path=&quot;*&quot; name=&quot;ServiceStack.Factory&quot; type=&quot;ServiceStack.WebHost.Endpoints.ServiceStackHttpHandlerFactory, ServiceStack&quot; verb=&quot;*&quot; preCondition=&quot;integratedMode&quot; resourceType=&quot;Unspecified&quot; allowPathInfo=&quot;true&quot; /&gt;
+    &lt;/handlers&gt;
+  &lt;/system.webServer&gt;
+  &lt;appSettings&gt;
+    &lt;add key=&quot;webPages:Enabled&quot; value=&quot;false&quot; /&gt;
+  &lt;/appSettings&gt;
+&lt;/configuration&gt;
+</pre>
+
+<h3>Create &amp; Initialize the Application Host</h3>
+<p>
+  Next we need to add the core of the application and initialize it when the web application starts.
+</p>
+<ol>
+  <li>Right click on your web project and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
+  <li>Add a new C# Class file named "AppHost.cs"</li>
+  <li>Add a using statement at the top of AppHost.cs: <pre class="brush: csharp">using ServiceStack.WebHost.Endpoints;</pre></li>
+  <li>
+    Implement AppHostBase in your new AppHost class:
+    <pre class="brush: csharp">public class AppHost : AppHostBase
+{
+    public AppHost() : base("My Application", typeof(AppHost).Assembly) { }
+
+    public override void Configure(Funq.Container container) {
+        ; // TODO: configure this application
+    }
+}
+</pre></li>
+  <li>Right click on your web project again and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
+  <li>Add a new C# Global Application Class with the default name of Global.asax</li>
+  <li>
+    Initialize your app host within Global.asax.cs
+    <pre class="brush: csharp">protected void Application_Start(object sender, EventArgs e) {
+    new AppHost().Init();
+}</pre>
+  </li>
+</ol>
+
+<h3>Try It</h3>
+<p>Just run the web application from Visual Studio and you should be presented with a mostly empty metadata page.</p>
+
+<div class="panel panel-default">
+  <div class="panel-body">
+    <img src="@Url.Content("/things/garbage-file/blank_servicestack_metadata.png")" alt="Default ServiceStack metadata page"/>
+  </div>
+</div>
+
+<h2>Serve Up Some Data</h2>
+<p>
+  I don't know about your specific scenarios but when I make web services it often involves me taking data from over here and shoving it down some HTTP tubes over there.
+  ServiceStack makes this workflow <b>really</b> easy.
+</p>
+
+<h3>A Sample Data Store</h3>
+<p>
+  For this example lets make a model and data store for some food.
+  It's often a good idea to put your models in another assembly from the API but this is an example so let that slide.
+  Add the following model and model collection.
+</p>
+<pre class="brush: csharp">public class Food
+{
+
+    public Food() { }
+    public Food(string name) {
+        Name = name;
+    }
+
+    public string Name { get; set; }
+    public bool IsDelicious { get; set; }
+    public bool MovesWhenServed { get; set; }
+}</pre>
+<pre class="brush: csharp">public class FoodListing : List&lt;Food&gt;
+{
+    public IEnumerable&lt;Food&gt; GetAllFoods() {
+        return this.AsEnumerable();
+    }
+
+    public IEnumerable&lt;Food&gt; GetEdibleFoods() {
+        return this.Where(x => x.IsDelicious || !x.MovesWhenServed);
+    }
+}
+</pre>
+<p>
+  ServiceStack already has IoC and DI ready for you, so lets use it. Head on over to your AppHost class and lets add a bit to it.
+</p>
+<pre class="brush: csharp">public override void Configure(Funq.Container container) {
+    container.Register(_ => new FoodListing {
+        new Food("Apple"){IsDelicious = true},
+        new Food("Eggplant"),
+        new Food("Dried Fish Flakes"){MovesWhenServed = true},
+        new Food("Gelatin Desserts"){IsDelicious = true, MovesWhenServed = true}
+    });
+}</pre>
+
+<h3>A Basic Service</h3>
+<p>
+  Lets serve out our food data by making a quick service.
+</p>
+<ol>
+  <li>Add a new C# code file within your web project like FoodService.cs</li>
+  <li>Populate the file with your service and message code like in the following example.</li>
+  <li>First add some using statements:
+    <pre class="brush: csharp">using System.Collections.Generic;
+using System.Linq;
+using ServiceStack.ServiceInterface;
+using ServiceStack.ServiceHost;</pre>
+  </li>
+  <li>
+    Next define the service code:
+    <pre class="brush: csharp">[Route("/food")]
+public class FoodListingRequest : IReturn&lt;List&lt;Food&gt;&gt;
+{
+    public bool? GoodFood { get; set; }
+}
+
+public class FoodService : Service
+{
+    public FoodListing Listing { get; set; }
+
+    public List&lt;Food&gt; Any(FoodListingRequest request) {
+        var results = request.GoodFood.GetValueOrDefault()
+            ? Listing.GetEdibleFoods()
+            : Listing.GetAllFoods();
+        return results.ToList();
+    }
+}</pre>
+  </li>
+</ol>
+
+<h3>Use It</h3>
+<p>
+  That is all it takes to make a service. Yes really, check this out!
+  Run the web project and navigate to the metadata page.
+  It should look similar to what you saw before but now there is a listing with your new service and the various
+  formats that it supports.
+</p>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <img src="@Url.Content("/things/garbage-file/servicestack-metadata.png")" alt="ServiceStack metadata links"/>
+  </div>
+</div>
+<p>
+  Click on one of those metadata links like the one for JSON and you should see a nice quick desccription of how to interact with the service.
+</p>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <img src="@Url.Content("/things/garbage-file/servicestack-json-metadata.png")" alt="ServiceStack JSON metadata"/>
+  </div>
+</div>
+<p>
+  Unless you are Comic Book Guy this is awesome! Now go make a call to the service: <code>/food</code> .
+  You get a nice default HTML view of the data, very handy for a quick look at your output. ServiceStack
+  relies on HTTP header information to determine the right content type. Your browser wants HTML so ServiceStack
+  complies. You can however override this, try <code>/food?format=json</code> .
+</p>
+
+<h2>Prettify</h2>
+<p>
+  While the default HTML representation is nice and the JSON looks good enough you may want to have a bit more control.
+</p>
+
+<h3>JSON Serialization Options</h3>
+<p>
+  The JSON serialization can be configured easily.
+  You can set global JSON serialization options within the Configure method of your AppHost class.
+  As an example here is how to enable camel casing:
+</p>
+<pre class="brush: csharp">JsConfig.EmitCamelCaseNames = true;</pre>
+<p>
+  If you think like I do the mutation of a static property probably gave you a bad feeling.
+  To make you feel better the configuration class has scoping capabilities:
+</p>
+<pre class="brush: csharp">using (JsConfig.BeginScope()) {
+    JsConfig.DateHandler = JsonDateHandler.ISO8601;
+    ; // some JSON serialization code
+}</pre>
+
+<h3>Razor Views</h3>
+TODO
+
+
+<script type="text/javascript" src="@Url.Content("~/js/sh/shCore.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCSharp.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCss.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushDiff.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushJScript.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushPlain.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushPowerShell.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushSql.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushXml.js")"></script>
+
+<script type="text/javascript">
+
+  $(function() {
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.defaults['gutter'] = false;
+    SyntaxHighlighter.all();
+  });
+</script>
