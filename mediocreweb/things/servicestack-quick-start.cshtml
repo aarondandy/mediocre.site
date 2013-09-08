@@ -93,7 +93,7 @@
 </p>
 <ol>
   <li>Right click on your web project and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
-  <li>Add a new C# Class file named "AppHost.cs"</li>
+  <li>Add a new C# Class file named "AppHost.cs" <i>(under the Code category)</i></li>
   <li>Add a using statement at the top of AppHost.cs: <pre class="brush: csharp">using ServiceStack.WebHost.Endpoints;</pre></li>
   <li>
     Implement AppHostBase in your new AppHost class:
@@ -107,9 +107,9 @@
 }
 </pre></li>
   <li>Right click on your web project again and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
-  <li>Add a new C# Global Application Class with the default name of Global.asax</li>
+  <li>Add a new C# <b>Global Application Class</b> <i>(Found under the Web category)</i> with the default name of Global.asax</li>
   <li>
-    Initialize your app host within Global.asax.cs
+    Initialize your app host within the <b>Application_Start</b> method of Global.asax.cs
     <pre class="brush: csharp">protected void Application_Start(object sender, EventArgs e) {
     new AppHost().Init();
 }</pre>
@@ -137,7 +137,8 @@
   It's often a good idea to put your models in another assembly from the API but this is an example so let that slide.
   Add the following model and model collection.
 </p>
-<pre class="brush: csharp">public class Food
+<p>Make Food.cs:</p>
+    <pre class="brush: csharp">public class Food
 {
 
     public Food() { }
@@ -149,6 +150,10 @@
     public bool IsDelicious { get; set; }
     public bool MovesWhenServed { get; set; }
 }</pre>
+<p>Make FoodListing.cs:</p>
+    <pre class="brush: csharp">using System;
+using System.Collections.Generic;
+using System.Linq;</pre>
 <pre class="brush: csharp">public class FoodListing : List&lt;Food&gt;
 {
     public IEnumerable&lt;Food&gt; GetAllFoods() {
@@ -158,10 +163,15 @@
     public IEnumerable&lt;Food&gt; GetEdibleFoods() {
         return this.Where(x => x.IsDelicious || !x.MovesWhenServed);
     }
+
+    public Food GetFood(string name) {
+        return this.FirstOrDefault(x => String.Equals(name, x.Name, StringComparison.OrdinalIgnoreCase));
+    }
+
 }
 </pre>
 <p>
-  ServiceStack already has IoC and DI ready for you, so lets use it. Head on over to your AppHost class and lets add a bit to it.
+  ServiceStack already has IoC and DI ready for you, so lets use it. Head on over to the <b>Configure</b> method of your AppHost class and lets add a bit to it.
 </p>
 <pre class="brush: csharp">public override void Configure(Funq.Container container) {
     container.Register(_ => new FoodListing {
@@ -174,28 +184,29 @@
 
 <h3>A Basic Service</h3>
 <p>
-  Lets serve out our food data by making a quick service.
+  Lets serve up our food data by making two quick services.
 </p>
 <ol>
-  <li>Add a new C# code file within your web project like FoodService.cs</li>
-  <li>Populate the file with your service and message code like in the following example.</li>
+  <li>Add a new C# code file within your web project named FoodService.cs or something similar</li>
   <li>First add some using statements:
     <pre class="brush: csharp">using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using ServiceStack.Common.Web;
 using ServiceStack.ServiceInterface;
 using ServiceStack.ServiceHost;</pre>
   </li>
   <li>
     Next define the service code:
-    <pre class="brush: csharp">[Route("/food")]
+    <pre class="brush: csharp">[Route("/food")] // maps the URI to the request model
 public class FoodListingRequest : IReturn&lt;List&lt;Food&gt;&gt;
 {
     public bool? GoodFood { get; set; }
 }
 
-public class FoodService : Service
+public class FoodListingService : Service
 {
-    public FoodListing Listing { get; set; }
+    public FoodListing Listing { get; set; } // we don't assign to this
 
     public List&lt;Food&gt; Any(FoodListingRequest request) {
         var results = request.GoodFood.GetValueOrDefault()
@@ -203,9 +214,34 @@ public class FoodService : Service
             : Listing.GetAllFoods();
         return results.ToList();
     }
+}
+
+[Route("/food/{Name}")]
+[Route("/food/details")]
+public class FoodDetailsRequest : IReturn&lt;Food&gt;
+{
+    public string Name { get; set; }
+}
+
+public class FoodDetailsService : Service
+{
+    public FoodListing Listing { get; set; }
+
+    public Food Any(FoodDetailsRequest request) {
+        var result = Listing.GetFood(request.Name);
+        if(result == null)
+            throw new HttpError(HttpStatusCode.NotFound,
+                "food-not-found",
+                "The requested food was not found in the listing.");
+        return result;
+    }
 }</pre>
   </li>
 </ol>
+<p>
+  Notice how we never assigned a value to <code>Listing</code>. Instead ServiceStack is going to populate that
+  from the IoC container we worked out previously.
+</p>
 
 <h3>Use It</h3>
 <p>
@@ -231,7 +267,7 @@ public class FoodService : Service
   Unless you are Comic Book Guy this is awesome! Now go make a call to the service: <code>/food</code> .
   You get a nice default HTML view of the data, very handy for a quick look at your output. ServiceStack
   relies on HTTP header information to determine the right content type. Your browser wants HTML so ServiceStack
-  complies. You can however override this, try <code>/food?format=json</code> .
+  complies. You can easily override this, try <code>/food?format=json</code> .
 </p>
 
 <h2>Prettify</h2>
@@ -243,12 +279,12 @@ public class FoodService : Service
 <p>
   The JSON serialization can be configured easily.
   You can set global JSON serialization options within the Configure method of your AppHost class.
-  As an example here is how to enable camel casing:
+  As an example here is how to force camel casing:
 </p>
 <pre class="brush: csharp">JsConfig.EmitCamelCaseNames = true;</pre>
 <p>
   If you think like I do the mutation of a static property probably gave you a bad feeling.
-  To make you feel better the configuration class has scoping capabilities:
+  To make you feel better the configuration class has scoping capabilities too:
 </p>
 <pre class="brush: csharp">using (JsConfig.BeginScope()) {
     JsConfig.DateHandler = JsonDateHandler.ISO8601;
@@ -256,8 +292,101 @@ public class FoodService : Service
 }</pre>
 
 <h3>Razor Views</h3>
-TODO
+<p>
+  Another really cool aspect to ServiceStack is how it manages the serialization of your response message for the client.
+  Just like with JSON you can configure how HTML is returned when it is requested by the client. ServiceStack has basic
+  Razor support that can be used to either render response messages or to just make standard Razor pages. Lets make a quick
+  index page and a details page using Razor.
+</p>
+<p>Add the following line to your AppHost.Configure method to enable Razor. <i>Make sure you installed the Razor NuGet package from before.</i></p>
+<pre class="brush: csharp">Plugins.Add(new RazorFormat()); // add razor and .md functionality</pre>
+<p>Next lets add the index page that will list out all the food. Add a new file to the project named default.cshtml</p>
+<div class="well how-i-do-it">
+  <ol>
+    <li>Right click on your web project and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
+    <li>Search for <b>html</b> in the top-right</li>
+    <li>Select <b>HTML Page</b></li>
+    <li>Name the file <b>default.cshtml</b> <i>(be sure to use the cshtml extension)</i></li>
+  </ol>
+</div>
+<p>
+  Lets make default.cshtml looks like this:
+</p>
+<pre class="brush: html">&#64;inherits ServiceStack.Razor.ViewPage
+&#64;{
+  // get the singleton instance of the food listing
+  var foodListing = AppHost.TryResolve&lt;FoodListing&gt;();
+}
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+&lt;head&gt;
+  &lt;title&gt;FOOD!&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;
+    &lt;blink&gt;&lt;marquee&gt;FOOD!&lt;/marquee&gt;&lt;/blink&gt;
+  &lt;/h1&gt;
+  &lt;center&gt;
+    &lt;table border=&quot;20&quot; cellpadding=&quot;20&quot; cellspacing=&quot;5&quot;&gt;
+      &#64;foreach (var food in foodListing.GetAllFoods()) {
+        &lt;tr&gt;&lt;td&gt;&lt;a href=&quot;&#64;Url.Content(&quot;/food/details?name=&quot; + Uri.EscapeDataString(food.Name))&quot;&gt;&#64;food.Name&lt;/a&gt;&lt;/td&gt;&lt;/tr&gt;
+      }
+    &lt;/table&gt;
+  &lt;/center&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+  Stylish! Now lets make a view for the <code>Food</code> model.
+  ServiceStack has a convention where Razor views for models should go into the <b>views</b> folder
+  and they should have the same name as the model they are associated with.
+</p>
+<div class="well how-i-do-it">
+  <ol>
+    <li>Right click on your web project and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Folder</span></li>
+    <li>Name the folder <b>views</b></li>
+    <li>Right click on the <b>views</b> folder and select <span class="label label-primary">Add</span> &rarr; <span class="label label-primary">New Item...</span></li>
+    <li>Select <b>HTML Page</b></li>
+    <li>Name the file <b>Food.cshtml</b> <i>(be sure to use the cshtml extension)</i></li>
+  </ol>
+</div>
+<p>Lets make Food.cshtml looks like this:</p>
+<pre class="brush: html">&#64;inherits ServiceStack.Razor.ViewPage&lt;Food&gt;
+&lt;!DOCTYPE html&gt;
+&lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
+&lt;head&gt;
+  &lt;title&gt;Food: &#64;Model.Name&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;&#64;Model.Name&lt;/h1&gt;
+  &lt;dl&gt;
+    &lt;dt&gt;Is yummy:&lt;/dt&gt;
+    &lt;dd&gt;&#64;Model.IsDelicious&lt;/dd&gt;
+    &lt;dt&gt;Still moves&lt;/dt&gt;
+    &lt;dd&gt;&#64;Model.MovesWhenServed&lt;/dd&gt;
+  &lt;/dl&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>
+  Simple! Navigate to your application root and give your basic web application a try.
+  Also try changing the format. Navigate to the following application URIs:
+  <ul>
+    <li>/food/Apple</li>
+    <li>/food/Apple?format=json</li>
+  </ul>
+</p>
 
+<div class="panel panel-default">
+  <div class="panel-body">
+    <img src="@Url.Content("/things/garbage-file/servicestack-different-views.png")" alt="Different ServiceStack views for a model"/>
+  </div>
+</div>
+
+<h2>Other Resources</h2>
+<ul>
+  <li><a href="https://github.com/servicestack/servicestack/wiki">ServiceStack GitHub Wiki</a></li>
+  <li><a href="https://github.com/ServiceStack/RazorRockstars/tree/master/src/RazorRockstars.WebHost">Razor Rockstars Code</a></li>
+  <li><a href="http://www.nuget.org/packages?q=servicestack">ServiceStack NuGet Packages</a></li>
+</ul>
 
 <script type="text/javascript" src="@Url.Content("~/js/sh/shCore.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCSharp.js")"></script>
@@ -268,9 +397,7 @@ TODO
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushPowerShell.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushSql.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushXml.js")"></script>
-
 <script type="text/javascript">
-
   $(function() {
     SyntaxHighlighter.defaults['toolbar'] = false;
     SyntaxHighlighter.defaults['gutter'] = false;

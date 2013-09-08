@@ -151,6 +151,7 @@
     <Content Include="things\garbage-file\2012-dark-for-2010-preview-thumb.jpg" />
     <Content Include="things\garbage-file\2012-dark-for-2010-preview.jpg" />
     <Content Include="things\garbage-file\blank_servicestack_metadata.png" />
+    <Content Include="things\garbage-file\servicestack-different-views.png" />
     <Content Include="things\garbage-file\servicestack-json-metadata.PNG" />
     <Content Include="things\garbage-file\servicestack-metadata.png" />
     <Content Include="Web.config" />
@@ -176,6 +177,9 @@
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="things\garbage-file\default.cshtml" />
     <Content Include="things\servicestack-quick-start.cshtml" />
+    <Content Include="things\metadata.json" />
+    <Content Include="views\_ThingLayout.cshtml" />
+    <Content Include="things\_Layout.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

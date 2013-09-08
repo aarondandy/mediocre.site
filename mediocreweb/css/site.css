@@ -28,3 +28,7 @@ table.fixedTable td,table.fixedTable th {
 .pagenav .nav .active .nav {
     display: block;
 }
+footer {
+    padding-top: 20px;
+    font-size: 85%;
+}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
+using ServiceStack.Text;
 
 namespace MediocreWeb.things
 {
@@ -10,38 +11,49 @@ namespace MediocreWeb.things
     {
 
         public static string ThingsDirectoryPath {
-            get {
-                return HostingEnvironment.MapPath("~/things/");
-            }
+            get { return HostingEnvironment.MapPath("~/things/"); }
         }
 
         public static DirectoryInfo ThingsDirectory {
             get { return new DirectoryInfo(ThingsDirectoryPath); }
         }
 
-        public static IEnumerable<ThingMetadata> GetAllThings() {
-            var thingsDirectory = ThingsDirectory;
-
-            var validSubDirectories = thingsDirectory
-                .GetDirectories()
-                .Where(d => d.GetFiles("default.cshtml").Any())
-                .Select(ThingMetadata.Create);
-
-            var validRootThings = thingsDirectory
-                .GetFiles("*.cshtml")
-                .Select(ThingMetadata.Create);
-
-            return validSubDirectories
-                .Concat(validRootThings)
-                .OrderByDescending(t => t.DateTime)
-                .ThenBy(t => t.Title);
+        public static FileInfo ThingsMetadataFile {
+            get { return new FileInfo(Path.Combine(ThingsDirectoryPath, "metadata.json")); }
         }
 
-        public ThingIndex() {
-            AllThings = GetAllThings().ToArray();
+        public static ThingMetadata[] ReadMetadata() {
+            using (var metadataFile = File.OpenRead(ThingsMetadataFile.FullName)) {
+                using (JsConfig.BeginScope()) {
+                    JsConfig.DateHandler = JsonDateHandler.ISO8601;
+                    var serializer = new JsonSerializer<ThingMetadata[]>();
+                    using (var reader = new StreamReader(metadataFile)) {
+                        return serializer.DeserializeFromReader(reader);
+                    }
+                }
+            }
         }
 
-        public ThingMetadata[] AllThings { get; private set; }
+        public ThingIndex() : this(ReadMetadata()) { }
+
+        public ThingIndex(IEnumerable<ThingMetadata> things) {
+            _core = things.ToDictionary(x => x.Key);
+        }
+
+        private readonly Dictionary<string, ThingMetadata> _core;
+
+        public IEnumerable<ThingMetadata> AllTheThings {
+            get {
+                return _core.Values
+                .OrderByDescending(x => x.TimeStamp);
+            }
+        }
+
+        public ThingMetadata GetAThing(string key) {
+            ThingMetadata result;
+            _core.TryGetValue(key, out result);
+            return result;
+        }
 
     }
 }

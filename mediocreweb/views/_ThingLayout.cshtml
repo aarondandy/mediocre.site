@@ -1,0 +1,17 @@
+﻿@using MediocreWeb.things
+@inherits ServiceStack.Razor.ViewPage
+@{Layout = "_SiteLayout";}
+@{
+  var thingIndex = AppHost.TryResolve<ThingIndex>();
+  if (thingIndex != null) {
+    var pathInfo = this.Request.PathInfo;
+    if (pathInfo != null) {
+      string key = Path.GetFileNameWithoutExtension(pathInfo);
+      var thingMetadata = thingIndex.GetAThing(key);
+      if (thingMetadata != null && !String.IsNullOrWhiteSpace(thingMetadata.Title)) {
+        ViewBag.PageTitle = thingMetadata.Title;
+      }
+    }
+  }
+}
+@RenderBody()
