@@ -180,6 +180,7 @@
     <Content Include="things\metadata.json" />
     <Content Include="views\_ThingLayout.cshtml" />
     <Content Include="things\_Layout.cshtml" />
+    <None Include="Properties\PublishProfiles\gearhost.pubxml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
