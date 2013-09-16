@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using MediocreWeb.things;
 using ServiceStack.Razor;
 using ServiceStack.Text;
@@ -18,6 +19,14 @@ namespace MediocreWeb
                 JsConfig.EmitCamelCaseNames = true;
                 JsConfig.DateHandler = JsonDateHandler.ISO8601;
                 container.Register(_ => new ThingIndex());
+
+                SetConfig(new EndpointHostConfig {
+                    AllowFileExtensions = new HashSet<string>(EndpointHostConfig.Instance.AllowFileExtensions) {
+                        "zip",
+                        "jar",
+                        "pdf"
+                    }
+                });
             }
 
             public static bool IsDebug {
