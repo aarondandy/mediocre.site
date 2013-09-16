@@ -15,14 +15,49 @@
   }
 </style>
 
-<p class="lead">
+
+<div class="row">
+  <div class="col-md-3">
+    <nav class="pagenav visible-md visible-lg" id="pagenav">
+      <ul class="nav">
+        <li>
+          <a href="#project-setup">Project Setup</a>
+          <ul class="nav">
+            <li><a href="#make-a-project">Make a Project</a></li>
+            <li><a href="#ref-servicestack">Reference ServiceStack</a></li>
+            <li><a href="#web-config-ceremony">Web.config Ceremony</a></li>
+            <li><a href="#create-app-host">Application Host</a></li>
+            <li><a href="#try-it-metadata">Try It</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#serve-some-data">Serve Up Some Data</a>
+          <ul class="nav">
+            <li><a href="#sample-data-store">A Sample Data Store</a></li>
+            <li><a href="#basic-service">A Basic Service</a></li>
+            <li><a href="#try-it-service">Use It</a></li>
+          </ul>
+        </li>
+        <li>
+          <a href="#prettify">Prettify</a>
+          <ul class="nav">
+            <li><a href="#json">JSON Serialization Options</a></li>
+            <li><a href="#razor">Razor Views</a></li>
+          </ul>
+        </li>
+        <li><a href="#other-resources">Other Resources</a></li>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-md-9">
+    <p class="lead">
   If you are a .NET developer and you need to make web services I want you to try ServiceStack <strong>right now</strong>.
-  Give me twenty minutes of your time and I will show you a glimpse of the basic features ServiceStack has to offer and how to use them.
+  Give me thirty minutes of your time and I will show you a glimpse of the basic features ServiceStack has to offer and how to use them.
 </p>
 
-<h2>Project Setup</h2>
+<h2 id="project-setup">Project Setup</h2>
 
-<h3>Make a Project</h3>
+<h3 id="make-a-project">Make a Project</h3>
 <p>
   Start off by making a new &quot;ASP.NET Empty Web Application&quot; however you feel comfortable.
 </p>
@@ -38,7 +73,7 @@
   </ol>
 </div>
 
-<h3>Reference ServiceStack</h3>
+<h3 id="ref-servicestack">Reference ServiceStack</h3>
 <p>
   Next we need to download and reference ServiceStack. The best way to do this is through NuGet.
   If you don't have NuGet (Visual Studio before 2012) you can head over to the <a href="http://www.nuget.org/">NuGet website</a> to get it.
@@ -59,7 +94,7 @@
   </ol>
 </div>
 
-<h3>Perform the Web.config Ceremony</h3>
+<h3 id="web-config-ceremony">Web.config Ceremony</h3>
 <p>
   While ServiceStack isn't big on using configuration files we still need to tell ASP.NET to handle requests with ServiceStack.
   Either merge or replace your <b>Web.config</b> with the following config XML.
@@ -87,7 +122,7 @@
 &lt;/configuration&gt;
 </pre>
 
-<h3>Create &amp; Initialize the Application Host</h3>
+<h3 id="create-app-host">Application Host</h3>
 <p>
   Next we need to add the core of the application and initialize it when the web application starts.
 </p>
@@ -116,7 +151,7 @@
   </li>
 </ol>
 
-<h3>Try It</h3>
+<h3 id="try-it-metadata">Try It</h3>
 <p>Just run the web application from Visual Studio and you should be presented with a mostly empty metadata page.</p>
 
 <div class="panel panel-default">
@@ -125,13 +160,13 @@
   </div>
 </div>
 
-<h2>Serve Up Some Data</h2>
+<h2 id="serve-some-data">Serve Up Some Data</h2>
 <p>
   I don't know about your specific scenarios but when I make web services it often involves me taking data from over here and shoving it down some HTTP tubes over there.
   ServiceStack makes this workflow <b>really</b> easy.
 </p>
 
-<h3>A Sample Data Store</h3>
+<h3 id="sample-data-store">A Sample Data Store</h3>
 <p>
   For this example lets make a model and data store for some food.
   It's often a good idea to put your models in another assembly from the API but this is an example so let that slide.
@@ -182,7 +217,7 @@ using System.Linq;</pre>
     });
 }</pre>
 
-<h3>A Basic Service</h3>
+<h3 id="basic-service">A Basic Service</h3>
 <p>
   Lets serve up our food data by making two quick services.
 </p>
@@ -243,7 +278,7 @@ public class FoodDetailsService : Service
   from the IoC container we worked out previously.
 </p>
 
-<h3>Use It</h3>
+<h3 id="try-it-service">Use It</h3>
 <p>
   That is all it takes to make a service. Yes really, check this out!
   Run the web project and navigate to the metadata page.
@@ -270,12 +305,12 @@ public class FoodDetailsService : Service
   complies. You can easily override this, try <code>/food?format=json</code> .
 </p>
 
-<h2>Prettify</h2>
+<h2 id="prettify">Prettify</h2>
 <p>
   While the default HTML representation is nice and the JSON looks good enough you may want to have a bit more control.
 </p>
 
-<h3>JSON Serialization Options</h3>
+<h3 id="json">JSON Serialization Options</h3>
 <p>
   The JSON serialization can be configured easily.
   You can set global JSON serialization options within the Configure method of your AppHost class.
@@ -291,11 +326,11 @@ public class FoodDetailsService : Service
     ; // some JSON serialization code
 }</pre>
 
-<h3>Razor Views</h3>
+<h3 id="razor">Razor Views</h3>
 <p>
   Another really cool aspect to ServiceStack is how it manages the serialization of your response message for the client.
   Just like with JSON you can configure how HTML is returned when it is requested by the client. ServiceStack has basic
-  Razor support that can be used to either render response messages or to just make standard Razor pages. Lets make a quick
+  Razor support that can be used to either render response messages or to just make basic Razor pages. Lets make a quick
   index page and a details page using Razor.
 </p>
 <p>Add the following line to your AppHost.Configure method to enable Razor. <i>Make sure you installed the Razor NuGet package from before.</i></p>
@@ -307,10 +342,11 @@ public class FoodDetailsService : Service
     <li>Search for <b>html</b> in the top-right</li>
     <li>Select <b>HTML Page</b></li>
     <li>Name the file <b>default.cshtml</b> <i>(be sure to use the cshtml extension)</i></li>
+    <li>Click <span class="label label-primary">Add</span></li>
   </ol>
 </div>
 <p>
-  Lets make default.cshtml looks like this:
+  Lets make default.cshtml look like this:
 </p>
 <pre class="brush: html">&#64;inherits ServiceStack.Razor.ViewPage
 &#64;{
@@ -349,7 +385,7 @@ public class FoodDetailsService : Service
     <li>Name the file <b>Food.cshtml</b> <i>(be sure to use the cshtml extension)</i></li>
   </ol>
 </div>
-<p>Lets make Food.cshtml looks like this:</p>
+<p>Lets make Food.cshtml look like this:</p>
 <pre class="brush: html">&#64;inherits ServiceStack.Razor.ViewPage&lt;Food&gt;
 &lt;!DOCTYPE html&gt;
 &lt;html xmlns=&quot;http://www.w3.org/1999/xhtml&quot;&gt;
@@ -369,11 +405,11 @@ public class FoodDetailsService : Service
 <p>
   Simple! Navigate to your application root and give your basic web application a try.
   Also try changing the format. Navigate to the following application URIs:
-  <ul>
-    <li>/food/Apple</li>
-    <li>/food/Apple?format=json</li>
-  </ul>
 </p>
+<ul>
+  <li>/food/Apple</li>
+  <li>/food/Apple?format=json</li>
+</ul>
 
 <div class="panel panel-default">
   <div class="panel-body">
@@ -381,12 +417,14 @@ public class FoodDetailsService : Service
   </div>
 </div>
 
-<h2>Other Resources</h2>
+<h2 id="other-resources">Other Resources</h2>
 <ul>
   <li><a href="https://github.com/servicestack/servicestack/wiki">ServiceStack GitHub Wiki</a></li>
   <li><a href="https://github.com/ServiceStack/RazorRockstars/tree/master/src/RazorRockstars.WebHost">Razor Rockstars Code</a></li>
   <li><a href="http://www.nuget.org/packages?q=servicestack">ServiceStack NuGet Packages</a></li>
 </ul>
+  </div>
+</div>
 
 <script type="text/javascript" src="@Url.Content("~/js/sh/shCore.js")"></script>
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCSharp.js")"></script>
@@ -399,8 +437,23 @@ public class FoodDetailsService : Service
 <script type="text/javascript" src="@Url.Content("~/js/sh/shBrushXml.js")"></script>
 <script type="text/javascript">
   $(function() {
+    var body = $(document.body);
+    body.scrollspy({
+      target: "#pagenav"
+    });
+
+    $("#pagenav").affix({
+      offset: 0
+    });
+
     SyntaxHighlighter.defaults['toolbar'] = false;
     SyntaxHighlighter.defaults['gutter'] = false;
     SyntaxHighlighter.all();
+
+    var scrollRefresh = function () {
+      body.scrollspy("refresh");
+    };
+    $(window).on('load', scrollRefresh);
+    setTimeout(scrollRefresh, 1000);
   });
 </script>

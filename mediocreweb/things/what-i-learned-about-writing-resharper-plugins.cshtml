@@ -5,7 +5,7 @@
 
 <div class="row">
   <div class="col-md-3">
-    <nav class="pagenav visible-md visible-lg" id="pagenav" style="position: fixed;">
+    <nav class="pagenav visible-md visible-lg" id="pagenav">
       <ul class="nav">
         <li><a href="#what-you-need">What You Need</a></li>
         <li><a href="#solution-and-project-organization">Solution and Project Organization</a>
@@ -585,7 +585,7 @@ public class MyQuickFix : IQuickFix {
       body.scrollspy("refresh");
     };
     $(window).on('load', scrollRefresh);
-    setTimeout(scrollRefresh, 1);
+    setTimeout(scrollRefresh, 1000);
 
   });
 </script>

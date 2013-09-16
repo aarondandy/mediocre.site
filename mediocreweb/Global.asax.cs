@@ -19,6 +19,16 @@ namespace MediocreWeb
                 JsConfig.DateHandler = JsonDateHandler.ISO8601;
                 container.Register(_ => new ThingIndex());
             }
+
+            public static bool IsDebug {
+                get {
+#if DEBUG
+                    return true;
+#else
+                    return false;
+#endif
+                }
+            }
         }
 
         protected void Application_Start(object sender, EventArgs e) {

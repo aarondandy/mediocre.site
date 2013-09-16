@@ -3,7 +3,6 @@
   var thingIndex = AppHost.TryResolve<MediocreWeb.things.ThingIndex>();
   ViewBag.PageTitle = "Mediocresoft - Some Things of Mine";
 }
-<h2>Some of My Things</h2>
 <ul>
 @foreach (var thing in thingIndex.AllTheThings) {
   <li><a href="@Url.Content("~/things/" + thing.ThingUri)">@thing.Title</a></li>

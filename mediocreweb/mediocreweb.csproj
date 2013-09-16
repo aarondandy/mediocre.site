@@ -181,6 +181,7 @@
     <Content Include="views\_ThingLayout.cshtml" />
     <Content Include="things\_Layout.cshtml" />
     <None Include="Properties\PublishProfiles\gearhost.pubxml" />
+    <Content Include="views\_ga.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
