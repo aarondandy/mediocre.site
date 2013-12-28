@@ -154,7 +154,9 @@
     <Content Include="things\garbage-file\servicestack-different-views.png" />
     <Content Include="things\garbage-file\servicestack-json-metadata.PNG" />
     <Content Include="things\garbage-file\servicestack-metadata.png" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Global.asax.cs">
