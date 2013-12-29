@@ -1,0 +1,134 @@
+﻿@inherits ServiceStack.Razor.ViewPage
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/shCore.css")"/>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/shThemeVS2012Light.css")"/>
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/css/sh/scrollbarHack.css")"/>
+<style type="text/css">
+  .how-i-do-it {
+    position: relative;
+    padding-top: 40px;
+  }
+
+    .how-i-do-it:after {
+      content: "How I do it:";
+      position: absolute;
+      top: 15px;
+      color: #888;
+    }
+</style>
+
+
+<div class="row">
+  <div class="col-md-3">
+    <nav class="pagenav visible-md visible-lg" id="pagenav">
+      <ul class="nav">
+        <li>nav</li>
+      </ul>
+    </nav>
+  </div>
+  <div class="col-md-9">
+
+    <h2 id="cc-intro">Introduction</h2>
+
+    <p>
+      Code Contracts is Microsoft's implementation of <a href="https://en.wikipedia.org/wiki/Design_by_contract">Design by Contract</a>
+      for VB and C#. Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts(v=vs.110).aspx">System.Diagnostics.Contracts Namespace</a>
+      included with .NET 4.0 and <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
+      define the behavior of your software and verify it at compile time as well as run time.
+      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replacement for tests.
+      For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
+    </p>
+    
+    TODO: example
+    
+    <h2>Getting Started</h2>
+    <h3>What You Need</h3>
+    
+    <ul>
+      <li>Visual Studio Pro or better</li>
+      <li>.NET 4.0</li>
+      <li><a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a></li>
+    </ul>
+    <p>
+      You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio Extension.
+      There may be ways to work around that but you will have to look into that yourself.
+      I have used the tools in 2010 and 2012 but no longer have access to up to date Microsoft Software so I can't confirm 2013 compatibility.
+      Be aware though that this only applies to the tooling. The Contracts namespace is part of .NET 4.0 so if you use it as I do
+      you shouldn't be left with a code base that won't compile/run if you have to downgrade to express.
+    </p>
+
+    <h3>Project Setup</h3>
+    
+    <p>
+      By default your projects will have a Debug and Release configuration.
+      The debug build can be used for development and testing while the release build is what you would likely run in production or distribute to others.
+      While you can use Code Contracts with these two configurations I find it inconvenient.
+      When I work with a debug build I like to run the application and tests frequently and quickly but the Code Contracts tooling gets in the way of this.
+      My solution is to have three configurations by adding a DebugCC configuration.
+    </p>
+    
+    <div class="well how-i-do-it">
+      Create the extra configuration for the solution:
+      <ol>
+        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span></li>
+        <li>Select the <span class="label label-primary">&lt;New...&gt;</span> item from the <b>Active solution configuration</b> drop down.</li>
+        <li>Enter <b>DebugCC</b> in the <span class="label label-primary">Name</span> field.</li>
+        <li>Copy settings from <b>Debug</b>.</li>
+        <li>Check the <b>Create new project configurations</b> check box if no projects have this configuration yet (none should).</li>
+        <li>Click <span class="label label-default">OK</span></li>
+      </ol>
+      Create the extra configuration for projects added later:
+      <ol>
+        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span></li>
+        <li>Select the <span class="label label-primary">DebugCC</span> item from the <b>Active solution configuration</b> drop down.</li>
+        <li>Click on the configuration for projects that do not have a <b>DebugCC</b> configuration associated and select <span class="label label-primary">&lt;New...&gt;</span>.</li>
+        <li>Enter <b>DebugCC</b> in the <span class="label label-primary">Name</span> field.</li>
+        <li>Copy settings from <b>Debug</b>.</li>
+        <li>Click <span class="label label-default">OK</span></li>
+      </ol>
+    </div>
+    
+    <p>Each of the three configurations has different settings with respect to Code Contracts.</p>
+
+    <ul>
+      <li>Debug - The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.</li>
+      <li>Release - This is the standard Release configuration but with one minor addition. While Code Contracts tooling is not run on the resulting assembly a second contract assembly is produced for distribution.</li>
+      <li>DebugCC - The DebugCC configuration is based on the Debug configuration but has Code Contracts enabled in full.
+        I periodically build and test with this configuration, often as I get close to a stopping point.</li>
+    </ul>
+    
+    <p>
+      TODO: show the different settings for each configuration
+    </p>
+    
+    <h3>Cache Setup</h3>
+    
+    <h2>Require</h2>
+    
+    <h3>Constructor Chaining</h3>
+    
+    <h2>Ensure</h2>
+    
+    <h3>Ensure on Throw</h3>
+    
+    <h2>Invariant</h2>
+    
+    <h2>Purity</h2>
+    
+    <h2>Static Analysis</h2>
+    
+    <h2>Assume and Assert</h2>
+    
+    <h2>Conditional Contracts</h2>
+    
+    <h2>Inheritance</h2>
+    
+    <h2>Distribution</h2>
+    
+    <h3>Using Contracts</h3>
+    
+    <h3>NuGet</h3>
+    
+    <h2>Final Thoughts</h2>
+
+  </div>
+</div>
