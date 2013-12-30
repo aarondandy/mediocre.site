@@ -32,102 +32,172 @@
     <p>
       Code Contracts is Microsoft's implementation of <a href="https://en.wikipedia.org/wiki/Design_by_contract">Design by Contract</a>
       for VB and C#. Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts(v=vs.110).aspx">System.Diagnostics.Contracts Namespace</a>
-      included with .NET 4.0 and <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
+      included with .NET 4.0 and the <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
       define the behavior of your software and verify it at compile time as well as run time.
-      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replacement for tests.
+      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replacement for testing.
       For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
     </p>
-    
+
     TODO: example
-    
+
     <h2>Getting Started</h2>
     <h3>What You Need</h3>
-    
+
     <ul>
       <li>Visual Studio Pro or better</li>
       <li>.NET 4.0</li>
       <li><a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a></li>
     </ul>
     <p>
-      You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio Extension.
+      You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio extension.
       There may be ways to work around that but you will have to look into that yourself.
-      I have used the tools in 2010 and 2012 but no longer have access to up to date Microsoft Software so I can't confirm 2013 compatibility.
+      I have used the tools in 2010 and 2012 but no longer have access to up to date Microsoft software so I can't confirm 2013 compatibility.
       Be aware though that this only applies to the tooling. The Contracts namespace is part of .NET 4.0 so if you use it as I do
       you shouldn't be left with a code base that won't compile/run if you have to downgrade to express.
     </p>
 
-    <h3>Project Setup</h3>
-    
+    <h3>Build Configurations</h3>
+
     <p>
       By default your projects will have a Debug and Release configuration.
       The debug build can be used for development and testing while the release build is what you would likely run in production or distribute to others.
       While you can use Code Contracts with these two configurations I find it inconvenient.
       When I work with a debug build I like to run the application and tests frequently and quickly but the Code Contracts tooling gets in the way of this.
       My solution is to have three configurations by adding a DebugCC configuration.
+      Each of the three configurations has different settings with respect to Code Contracts.
     </p>
-    
-    <div class="well how-i-do-it">
-      Create the extra configuration for the solution:
-      <ol>
-        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span></li>
-        <li>Select the <span class="label label-primary">&lt;New...&gt;</span> item from the <b>Active solution configuration</b> drop down.</li>
-        <li>Enter <b>DebugCC</b> in the <span class="label label-primary">Name</span> field.</li>
-        <li>Copy settings from <b>Debug</b>.</li>
-        <li>Check the <b>Create new project configurations</b> check box if no projects have this configuration yet (none should).</li>
-        <li>Click <span class="label label-default">OK</span></li>
-      </ol>
-      Create the extra configuration for projects added later:
-      <ol>
-        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span></li>
-        <li>Select the <span class="label label-primary">DebugCC</span> item from the <b>Active solution configuration</b> drop down.</li>
-        <li>Click on the configuration for projects that do not have a <b>DebugCC</b> configuration associated and select <span class="label label-primary">&lt;New...&gt;</span>.</li>
-        <li>Enter <b>DebugCC</b> in the <span class="label label-primary">Name</span> field.</li>
-        <li>Copy settings from <b>Debug</b>.</li>
-        <li>Click <span class="label label-default">OK</span></li>
-      </ol>
-    </div>
-    
-    <p>Each of the three configurations has different settings with respect to Code Contracts.</p>
-
     <ul>
       <li>Debug - The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.</li>
       <li>Release - This is the standard Release configuration but with one minor addition. While Code Contracts tooling is not run on the resulting assembly a second contract assembly is produced for distribution.</li>
       <li>DebugCC - The DebugCC configuration is based on the Debug configuration but has Code Contracts enabled in full.
         I periodically build and test with this configuration, often as I get close to a stopping point.</li>
     </ul>
-    
+
+    <div class="well how-i-do-it">
+      Create the extra configuration for the solution:
+      <ol>
+        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span>
+          (<span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
+        </li>
+        <li>Select the <span class="label label-primary">&lt;New...&gt;</span> item from the <b>Active solution configuration</b> drop down.</li>
+        <li>Enter <b>DebugCC</b> in the <b>Name</b> field.</li>
+        <li>Copy settings from <b>Debug</b>.</li>
+        <li>Check the <b>Create new project configurations</b> check box if no projects have this configuration yet (none should).</li>
+        <li>Click <span class="label label-default">OK</span>.</li>
+      </ol>
+      Create the extra configuration for projects added later:
+      <ol>
+        <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span>
+          (<span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
+        </li>
+        <li>Select the <span class="label label-primary">DebugCC</span> item from the <b>Active solution configuration</b> drop down.</li>
+        <li>Click on the configuration for projects that do not have a <b>DebugCC</b> configuration associated and select <span class="label label-primary">&lt;New...&gt;</span>.</li>
+        <li>Enter <b>DebugCC</b> in the <b>Name</b> field.</li>
+        <li>Copy settings from <b>Debug</b>.</li>
+        <li>Click <span class="label label-default">OK</span>.</li>
+      </ol>
+
+    </div>
+
     <p>
-      TODO: show the different settings for each configuration
+      You have to configure Code Contracts for each project that you want to use it for.
+      I configure each of the three configurations differently.
+      I will explain later some of the reasons for these different configurations but for now this should get you started.
     </p>
+
+    <div class="well how-i-do-it">
+      Access the Code Contracts project property sheet.
+      <ol>
+        <li>Install Code Contracts if you have not already.</li>
+        <li>Right click on a project and select <span class="label label-primary">Properties</span> from the context menu.</li>
+        <li>Select the tab on the left for <span class="label label-primary">Code Contracts</span>.</li>
+      </ol>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <h4>DebugCC</h4>
+        <a href="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-debugcc.png")" target="_blank">
+          <img
+            src="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-debugcc.png")"
+            alt="DebugCC project configuration screen shot"
+            class="img-responsive" />
+        </a>
+        <p>DebugCC builds are where I use the Code Contracts tools.</p>
+        <ul>
+          <li>Assembly Mode should be left on Custom Parameter Validation</li>
+          <li>Perform Runtime Contract Checking is enabled and set to Full.</li>
+          <li>Perform Static Contract Checking is enabled</li>
+          <li>The cache is configured to use my SQL Express instance on <code>.\SQLEXPRESS</code> . </li>
+          <li>I like to turn the Warning Level up a notch or two but you can start off as low as you would like.</li>
+          <li>Set the Contract Reference Assembly to Build and optionally enable &quot;Emit contracts into XML doc file.&quot;</li>
+        </ul>
+      </div>
+      <div class="col-md-4">
+        <h4>Release</h4>
+        <a href="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-release.png")" target="_blank">
+          <img
+            src="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-release.png")"
+            alt="Release project configuration screen shot"
+            class="img-responsive" />
+        </a>
+        <p>
+          For release builds I only configure it to &quot;Build&quot; the Contract Reference Assembly and to &quot;Emit contracts into XML doc file.&quot;
+          This allows contracts to be distributed along side my released assemblies instead of modifying my resulting assemblies.
+        </p>
+      </div>
+      <div class="col-md-4">
+        <h4>Debug</h4>
+        <a href="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-debug.png")" target="_blank">
+          <img
+            src="@Url.Content("~/things/garbage-file/cc-assets/prjcfg-debug.png")"
+            alt="Debug project configuration screen shot"
+            class="img-responsive" />
+        </a>
+        <p>
+          I leave the Debug configuration alone so that it has Code Contracts post-build actions disabled.
+          This also leaves my assemblies untouched to simplify debugging.
+        </p>
+      </div>
+    </div>
     
-    <h3>Cache Setup</h3>
-    
-    <h2>Require</h2>
-    
-    <h3>Constructor Chaining</h3>
-    
-    <h2>Ensure</h2>
-    
-    <h3>Ensure on Throw</h3>
-    
-    <h2>Invariant</h2>
-    
+    <h2>Adding Contracts to Methods</h2>
+
+    <h3>Preconditions</h3>
+    <p>
+      
+      Garbage:<br/>
+      With Code Contracts you can specify preconditions for methods by using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
+      or by using &quot;legacy&quot; conditions and exceptions at the top of a method
+
+    </p>
+
+    TODO: Constructor Chaining
+
+    <h3>Postconditions</h3>
+
+    TODO: on throw
+
+    <h3>Invariants</h3>
+
     <h2>Purity</h2>
-    
+
     <h2>Static Analysis</h2>
-    
+
     <h2>Assume and Assert</h2>
-    
+
     <h2>Conditional Contracts</h2>
-    
+
     <h2>Inheritance</h2>
-    
+
     <h2>Distribution</h2>
-    
+
     <h3>Using Contracts</h3>
-    
+
     <h3>NuGet</h3>
     
+    <h3>Signing</h3>
+
     <h2>Final Thoughts</h2>
 
   </div>
