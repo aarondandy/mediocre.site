@@ -66,12 +66,13 @@
       My solution is to have three configurations by adding a DebugCC configuration.
       Each of the three configurations has different settings with respect to Code Contracts.
     </p>
-    <ul>
-      <li>Debug - The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.</li>
-      <li>Release - This is the standard Release configuration but with one minor addition. While Code Contracts tooling is not run on the resulting assembly a second contract assembly is produced for distribution.</li>
-      <li>DebugCC - The DebugCC configuration is based on the Debug configuration but has Code Contracts enabled in full.
-        I periodically build and test with this configuration, often as I get close to a stopping point.</li>
-    </ul>
+    <dl>
+      <dt>Debug</dt>
+      <dd>The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.</dd>
+      <dt>Release</dt><dd>This is the standard Release configuration but with one minor addition. While Code Contracts tooling is not run on the resulting assembly a second contract assembly is produced for distribution.</dd>
+      <dt>DebugCC</dt><dd>The DebugCC configuration is based on the Debug configuration but has Code Contracts enabled in full.
+        I periodically build and test with this configuration, often as I get close to a stopping point.</dd>
+    </dl>
 
     <div class="well how-i-do-it">
       Create the extra configuration for the solution:
@@ -123,15 +124,15 @@
             alt="DebugCC project configuration screen shot"
             class="img-responsive" />
         </a>
-        <p>DebugCC builds are where I use the Code Contracts tools.</p>
-        <ul>
-          <li>Assembly Mode should be left on Custom Parameter Validation</li>
-          <li>Perform Runtime Contract Checking is enabled and set to Full.</li>
-          <li>Perform Static Contract Checking is enabled</li>
-          <li>The cache is configured to use my SQL Express instance on <code>.\SQLEXPRESS</code> . </li>
-          <li>I like to turn the Warning Level up a notch or two but you can start off as low as you would like.</li>
-          <li>Set the Contract Reference Assembly to Build and optionally enable &quot;Emit contracts into XML doc file.&quot;</li>
-        </ul>
+        <p><small>DebugCC builds are where I use the Code Contracts tools.</small></p>
+        <ol class="list-unstyled">
+          <li><small><b>Assembly Mode</b> should be left on Custom Parameter Validation.</small></li>
+          <li><small><b>Perform Runtime Contract Checking</b> is enabled and set to Full.</small></li>
+          <li><small><b>Perform Static Contract Checking</b> is enabled.</small></li>
+          <li><small><b>SQL Server</b> cache is configured to use my SQL Express instance on <code>.\SQLEXPRESS</code>.</small></li>
+          <li><small><b>Warning Level</b> can be turned up a notch or two if you want.</small></li>
+          <li><small><b>Contract Reference Assembly</b> is set to Build and also enable &quot;Emit contracts into XML doc file.&quot;</small></li>
+        </ol>
       </div>
       <div class="col-md-4">
         <h4>Release</h4>
@@ -141,10 +142,10 @@
             alt="Release project configuration screen shot"
             class="img-responsive" />
         </a>
-        <p>
+        <small>
           For release builds I only configure it to &quot;Build&quot; the Contract Reference Assembly and to &quot;Emit contracts into XML doc file.&quot;
           This allows contracts to be distributed along side my released assemblies instead of modifying my resulting assemblies.
-        </p>
+        </small>
       </div>
       <div class="col-md-4">
         <h4>Debug</h4>
@@ -154,14 +155,14 @@
             alt="Debug project configuration screen shot"
             class="img-responsive" />
         </a>
-        <p>
+        <small>
           I leave the Debug configuration alone so that it has Code Contracts post-build actions disabled.
           This also leaves my assemblies untouched to simplify debugging.
-        </p>
+        </small>
       </div>
     </div>
     
-    <h2>Adding Contracts to Methods</h2>
+    <h2>Writing Contracts</h2>
 
     <h3>Preconditions</h3>
     <p>
