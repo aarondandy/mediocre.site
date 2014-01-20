@@ -68,17 +68,26 @@
     </p>
     <dl>
       <dt>Debug</dt>
-      <dd>The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.</dd>
-      <dt>Release</dt><dd>This is the standard Release configuration but with one minor addition. While Code Contracts tooling is not run on the resulting assembly a second contract assembly is produced for distribution.</dd>
-      <dt>DebugCC</dt><dd>The DebugCC configuration is based on the Debug configuration but has Code Contracts enabled in full.
-        I periodically build and test with this configuration, often as I get close to a stopping point.</dd>
+      <dd>
+        The primary configuration is the standard Debug configuration which has no additional build steps related to Code Contracts and is for standard development and testing.
+      </dd>
+      <dt>Release</dt>
+      <dd>
+        This is the standard Release configuration but with one minor addition in the case of a library.
+        While Code Contracts tooling is not run on the resulting assembly a second contract assembly can be produced for distribution.
+      </dd>
+      <dt>DebugCC</dt>
+      <dd>
+        The DebugCC configuration is based on the Debug configuration but has Code Contracts tooling enabled.
+        I periodically build and test with this configuration, often as I get close to a stopping point.
+      </dd>
     </dl>
 
     <div class="well how-i-do-it">
-      Create the extra configuration for the solution:
+      Create the extra configuration for the <em>solution</em>:
       <ol>
         <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span>
-          (<span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
+          (or <span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
         </li>
         <li>Select the <span class="label label-primary">&lt;New...&gt;</span> item from the <b>Active solution configuration</b> drop down.</li>
         <li>Enter <b>DebugCC</b> in the <b>Name</b> field.</li>
@@ -86,10 +95,10 @@
         <li>Check the <b>Create new project configurations</b> check box if no projects have this configuration yet (none should).</li>
         <li>Click <span class="label label-default">OK</span>.</li>
       </ol>
-      Create the extra configuration for projects added later:
+      Create the extra configuration for <em>projects added later</em>:
       <ol>
         <li>Within Visual Studio navigate to <span class="label label-primary">Build</span> &darr; <span class="label label-primary">Configuration Manager...</span>
-          (<span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
+          (or <span class="label label-default">ALT</span>+<span class="label label-default">B</span>+<span class="label label-default">O</span>).
         </li>
         <li>Select the <span class="label label-primary">DebugCC</span> item from the <b>Active solution configuration</b> drop down.</li>
         <li>Click on the configuration for projects that do not have a <b>DebugCC</b> configuration associated and select <span class="label label-primary">&lt;New...&gt;</span>.</li>
@@ -97,7 +106,6 @@
         <li>Copy settings from <b>Debug</b>.</li>
         <li>Click <span class="label label-default">OK</span>.</li>
       </ol>
-
     </div>
 
     <p>
@@ -110,8 +118,9 @@
       Access the Code Contracts project property sheet.
       <ol>
         <li>Install Code Contracts if you have not already.</li>
-        <li>Right click on a project and select <span class="label label-primary">Properties</span> from the context menu.</li>
-        <li>Select the tab on the left for <span class="label label-primary">Code Contracts</span>.</li>
+        <li>Right click on a project and select <span class="label label-primary">Properties</span> from the context menu
+          (or <span class="label label-default">ALT</span>+<span class="label label-default">Enter</span>).</li>
+        <li>Select the tab on the left for <b>Code Contracts</b>.</li>
       </ol>
     </div>
 
@@ -167,10 +176,13 @@
     <h3>Preconditions</h3>
     <p>
       
+    </p>
+    
+
+    <p>
       Garbage:<br/>
       With Code Contracts you can specify preconditions for methods by using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
       or by using &quot;legacy&quot; conditions and exceptions at the top of a method
-
     </p>
 
     TODO: Constructor Chaining
