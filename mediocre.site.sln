@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{24B483
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LuckyLinks", "LuckyLinks\LuckyLinks.csproj", "{1DE7F87F-B835-4B0C-922A-946648C2A9EE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -20,6 +22,10 @@ Global
 		{95CE16E2-24AC-4B9D-9B5C-B5089CD5EC53}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{95CE16E2-24AC-4B9D-9B5C-B5089CD5EC53}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{95CE16E2-24AC-4B9D-9B5C-B5089CD5EC53}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1DE7F87F-B835-4B0C-922A-946648C2A9EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1DE7F87F-B835-4B0C-922A-946648C2A9EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1DE7F87F-B835-4B0C-922A-946648C2A9EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1DE7F87F-B835-4B0C-922A-946648C2A9EE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
