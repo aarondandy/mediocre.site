@@ -7,16 +7,13 @@
     position: relative;
     padding-top: 40px;
   }
-
-    .how-i-do-it:after {
-      content: "How I do it:";
-      position: absolute;
-      top: 15px;
-      color: #888;
-    }
+  .how-i-do-it:after {
+    content: "How I do it:";
+    position: absolute;
+    top: 15px;
+    color: #888;
+  }
 </style>
-
-
 <div class="row">
   <div class="col-md-3">
     <nav class="pagenav visible-md visible-lg" id="pagenav">
@@ -38,7 +35,8 @@
       For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
     </p>
 
-    TODO: example
+    TODO: more DBC explanations
+    TODO: examples
 
     <h2>Getting Started</h2>
     <h3>What You Need</h3>
@@ -173,16 +171,35 @@
     
     <h2>Writing Contracts</h2>
 
+    <h3>Method Anatomy with Code Contracts</h3>
+    TODO!
+
     <h3>Preconditions</h3>
     <p>
-      
+      As preconditions are to be checked before a method performs its real work they are the first statements within the contract block of a method.
+      Preconditions can be written in two forms:
+      <dl>
+        <dt>&quot;legacy&quot; requires (standard preconditions)</dt>
+        <dd>
+          The &quot;legacy&quot; requires are my main choice when writing precondtions and you probably already have plenty in your existing source.
+          These preconditions are written using a basic <code class="brush: csharp;">if( ! precondition) throw new SpecificException();</code> statement
+          and must be the first preconditions in the contract block.
+          I suppose the name would make sense if code contracts were built into the language but they are not so I don't feel the name is appropriate.
+          I will refer to them as <em>standard preconditions</em> from now on.
+        </dd>
+        <dt>Contract.Requires</dt>
+        <dd>
+          The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
+          are another way to specify preconditions. They act similar to an assertion exept they are only compiled into my programs when using the DebugCC configuration.
+          While this seems pointless it still has its uses and also supplies the Code Contracts tooling with information.
+          Also note that while Contract.Requires does have a generic option available I don't use it.
+          The generic versions require a post build step to run correctly.
+        </dd>
+      </dl>
     </p>
-    
 
     <p>
-      Garbage:<br/>
-      With Code Contracts you can specify preconditions for methods by using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
-      or by using &quot;legacy&quot; conditions and exceptions at the top of a method
+      So how do you choose 
     </p>
 
     TODO: Constructor Chaining
@@ -215,3 +232,37 @@
 
   </div>
 </div>
+
+<script type="text/javascript" src="@Url.Content("~/js/sh/shCore.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCSharp.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushCss.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushDiff.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushJScript.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushPlain.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushPowerShell.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushSql.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/js/sh/shBrushXml.js")"></script>
+<script type="text/javascript">
+  $(function () {
+    var body = $(document.body);
+    body.scrollspy({
+      target: "#pagenav"
+    });
+
+    $("#pagenav").affix({
+      offset: 0
+    });
+
+    SyntaxHighlighter.defaults['toolbar'] = false;
+    SyntaxHighlighter.defaults['gutter'] = false;
+    SyntaxHighlighter.defaults['smart-tabs'] = false;
+
+    SyntaxHighlighter.all();
+
+    var scrollRefresh = function () {
+      body.scrollspy("refresh");
+    };
+    $(window).on('load', scrollRefresh);
+    setTimeout(scrollRefresh, 1000);
+  });
+</script>
