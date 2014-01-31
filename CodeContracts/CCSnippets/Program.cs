@@ -10,7 +10,7 @@ namespace CCSnippets
             Console.WriteLine(NoNull(text));
 
             Console.WriteLine(WordTitleCase("woRd"));
-
+            Console.WriteLine(new[]{1,2,3}.QuickFirstOrDefault());
             Console.ReadKey();
         }
 
@@ -35,4 +35,13 @@ namespace CCSnippets
         }
 
     }
+
+    internal static class EnumerableHelpers
+    {
+        internal static T QuickFirstOrDefault<T>(this T[] array) {
+            Contract.Requires(array != null);
+            return array.Length == 0 ? default(T) : array[0];
+        }
+    }
+
 }

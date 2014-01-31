@@ -202,7 +202,7 @@
       
     <h4>When to Choose Standard Preconditions</h4>
     <p>
-      When a method is publicly accessible from outside an assembly I use the standard method of specifying preconditions:
+      When a method is publicly accessible (public or protected) from outside an assembly I use the standard method of specifying preconditions as shown in the following example.
     </p>
     <pre class="brush: csharp;">
 public static string WordTitleCase(string input) {
@@ -219,7 +219,18 @@ public static string WordTitleCase(string input) {
     return builder.ToString();
 }  
 </pre>
-
+    <p>
+      Using the standard form ensures that my checks are present in every build even if Code Contracts is not used.
+    </p>
+    
+    <h4>When to Choose Contract.Requires</h4>
+    <p>
+      When a method is accessible only within the assembly it is declared in I tend to use the Contract.Requires form as in the following example.
+    </p>
+    <pre class="brush: csharp">internal static T QuickFirstOrDefault&lt;T&gt;(this T[] array) {
+    Contract.Requires(array != null);
+    return array.Length == 0 ? default(T) : array[0];
+}</pre>
     <h3>Postconditions</h3>
 
     TODO: on throw
