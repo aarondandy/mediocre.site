@@ -186,23 +186,39 @@
           and must be the first preconditions in the contract block.
           I suppose the name would make sense if code contracts were built into the language but they are not so I don't feel the name is appropriate.
           I will refer to them as <em>standard preconditions</em> from now on.
-        </dd>
+          Note that when using standard preconditions without any other calls to Contract.Requires or Contract.Ensures a call to
+          <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.endcontractblock(v=vs.110).aspx">Contract.EndContractBlock</a>
+          is required to complete the contract block.</dd>
         <dt>Contract.Requires</dt>
         <dd>
           The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
           are another way to specify preconditions. They act similar to an assertion exept they are only compiled into my programs when using the DebugCC configuration.
           While this seems pointless it still has its uses and also supplies the Code Contracts tooling with information.
           Also note that while Contract.Requires does have a generic option available I don't use it.
-          The generic versions require a post build step to run correctly.
+          The generic versions require a post build step to run correctly white standard preconditions work just fine.
         </dd>
       </dl>
     </p>
-
+      
+    <h4>When to Choose Standard Preconditions</h4>
     <p>
-      So how do you choose 
+      When a method is publicly accessible from outside an assembly I use the standard method of specifying preconditions:
     </p>
+    <pre class="brush: csharp;">
+public static string WordTitleCase(string input) {
+    if (String.IsNullOrEmpty(input))
+        throw new ArgumentException("Must not be null or empty.", "input");
+    if (Char.IsWhiteSpace(input[0]) || Char.IsWhiteSpace(input[input.Length - 1]))
+        throw new ArgumentException("Must be trimmed.", "input");
+    Contract.EndContractBlock();
 
-    TODO: Constructor Chaining
+    var builder = new System.Text.StringBuilder(input.Length);
+    builder.Append(Char.ToUpper(input[0]));
+    for (int i = 1; i < input.Length; i++)
+        builder.Append(Char.ToLower(input[i]));
+    return builder.ToString();
+}  
+</pre>
 
     <h3>Postconditions</h3>
 
