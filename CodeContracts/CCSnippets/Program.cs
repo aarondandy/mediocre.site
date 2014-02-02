@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics.Contracts;
+using System.Text;
 
 namespace CCSnippets
 {
@@ -16,12 +18,12 @@ namespace CCSnippets
                 E00 = 1,
                 E01 = 2,
                 E10 = 3,
-                E11 = Double.NaN,
+                E11 = 4,
             };
             try {
                 m.Invert();
             }
-            catch (InvalidOperationException) {
+            catch (NoInverseException) {
                 Console.WriteLine("oops!");
             }
 
@@ -41,12 +43,22 @@ namespace CCSnippets
             Console.ReadKey();
         }
 
+        internal static string Multiply(string s, int n) {
+            Contract.Requires(n > 0);
+            Contract.Requires(s != null);
+            Contract.Ensures(Contract.Result<string>() != null);
+            Contract.Ensures(Contract.Result<string>().Length == s.Length * n);
+            var builder = new StringBuilder(s, s.Length * n);
+            for (int i = 1; i < n; i++)
+                builder.Append(s);
+            return builder.ToString();
+        }
+
         static string NoNull(string input) {
             Contract.Requires(input != null);
             Contract.Ensures(Contract.Result<string>() != null);
             return input;
         }
-
         
         [Pure]
         public static bool IsTrimmed(string text) {

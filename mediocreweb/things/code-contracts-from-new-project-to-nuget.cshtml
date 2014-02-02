@@ -210,7 +210,7 @@
     <p>
       When a method is publicly accessible (public or protected) from outside an assembly I use the standard method of specifying preconditions as shown in the following example.
     </p>
-    <pre class="brush: csharp;">[Pure]
+    <pre class="brush: csharp;">[Pure] // must be pure to use in contract methods
 public static bool IsTrimmed(string text) {
     if (text == null)
         return false;
@@ -252,47 +252,24 @@ public static string WordTitleCase(string input) {
     <div class="row">
       <div class="col-md-6">
         Redundant preconditions:
-        <pre class="brush: csharp">public class WithNewLines : Base {
-    public WithNewLines(string value)
-        : base(value) { // enforced in here
-        Contract.Requires(value != null);
-    }
-    public override void Append(string text) {
-        // inherits preconditions automatically
-        base.Append(text); // enforced in here
-        Value += Environment.NewLine;
-    }
-    public void AppendRaw(string text) {
-        Contract.Requires(text != null);
-        base.Append(text); // enforced in here
-    }
+        <pre class="brush: csharp">public class Derrived : Base {
+  public Derrived(string value)
+    : base(value) {
+    // enforced in Base.Base
+    Contract.Requires(value != null);
+  }
 }</pre>
-        <div class="alert alert-info">
-          <strong>Note:</strong> Inheritance is hard!
-        </div>
       </div>
       <div class="col-md-6">
         Orignal preconditions:
         <pre class="brush: csharp">public class Base {
-    public string Value { get; set; }
-    public Base(string value) {
-        if (value == null)
-            throw new ArgumentNullException();
-        Contract.EndContractBlock();
-        Value = value;
-    }
-    public virtual void Append(string text) {
-        Contract.Requires(text != null);
-        Contract.EndContractBlock(); // a hint
-        // not a part of the contract block
-        //  but will be in all builds to enforce
-        // must be seperate because I am using
-        //  Custom Parameter Validation
-        //  and a concrete implementation
-        if (text == null)
-            throw new ArgumentNullException();
-        Value += text;
-    }
+  public string Value { get; set; }
+  public Base(string value) {
+    if (value == null)
+      throw new ArgumentNullException();
+    Contract.EndContractBlock();
+    Value = value;
+  }
 }</pre>
       </div>
     </div>
@@ -321,12 +298,48 @@ public static string WordTitleCase(string input) {
           These generic methods are similar to Contract.Ensures but also require a generic argument that specifies the exception type they apply to.
           These postconditions are very important when writing exception safe code.
         </p>
+        <div class="panel panel-info">
+          <div class="panel-heading">Example: Object state preserved on throw.</div>
+          <div class="panel-body">
+            <pre class="brush: csharp">public class Matrix2 {
+    public double E00;
+    public double E01;
+    public double E10;
+    public double E11;
+    public void Invert() {
+        if (Double.IsNaN(E00)) throw new InvalidOperationException();
+        if (Double.IsNaN(E01)) throw new InvalidOperationException();
+        if (Double.IsNaN(E10)) throw new InvalidOperationException();
+        if (Double.IsNaN(E11)) throw new InvalidOperationException();
+        // don't mutate when NoInverseException is thrown
+        Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
+            Contract.OldValue(E00) == E00
+            && Contract.OldValue(E01) == E01
+            && Contract.OldValue(E10) == E10
+            && Contract.OldValue(E11) == E11);
+        var determinant = (E00 * E11) - (E10 * E01);
+        if (0 == determinant
+            || Double.IsNaN(determinant)
+            || Double.IsInfinity(determinant))
+            throw new NoInverseException(); // can't find inverse
+        var temp = E00;
+        E00 = E11 / determinant;
+        E11 = temp / determinant;
+        temp = -determinant;
+        E01 = E01 / temp;
+        E10 = E10 / temp;
+    }
+}</pre>
+          </div>
+        </div>
+
+        
       </dd>
     </dl>
 
-    <h4>Examples</h4>
 
-    TODO: on throw
+
+
 
     <h3>Invariants</h3>
 
