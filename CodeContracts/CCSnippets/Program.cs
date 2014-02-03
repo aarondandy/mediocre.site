@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Text;
 
@@ -8,37 +7,21 @@ namespace CCSnippets
     class Program
     {
         static void Main(string[] args) {
-            var text = "test";
-            Console.WriteLine(NoNull(text));
+            var a = AxisAlignedRectangle.Create(1, 2, 3, 4);
+            var b = AxisAlignedRectangle.Create(4, 3, 2, 1);
+            var c = AxisAlignedRectangle.Enclose(a, b);
+            var d = AxisAlignedRectangle.Enclose(b, a);
+            var e = AxisAlignedRectangle.Enclose(a, a);
+            var f = AxisAlignedRectangle.Enclose(
+                new AxisAlignedRectangle(1, 3, 0, 1),
+                new AxisAlignedRectangle(3, 4, 0, 1));
 
-            Contract.Assume(IsTrimmed("woRd"));
-            Console.WriteLine(WordTitleCase("woRd"));
-
-            var m = new Matrix2 {
-                E00 = 1,
-                E01 = 2,
-                E10 = 3,
-                E11 = 4,
-            };
-            try {
-                m.Invert();
-            }
-            catch (NoInverseException) {
-                Console.WriteLine("oops!");
-            }
-
-            Console.WriteLine(m);
-
-            var a = new Base("123");
-            a.Append("!");
-
-            Console.WriteLine(a.Value);
-
-            var b = new WithNewLines("123");
-            b.Append("!");
-            b.AppendRaw("abc");
-
-            Console.WriteLine(b.Value);
+            Console.WriteLine(a);
+            Console.WriteLine(b);
+            Console.WriteLine(c);
+            Console.WriteLine(d);
+            Console.WriteLine(e);
+            Console.WriteLine(f);
 
             Console.ReadKey();
         }
@@ -51,6 +34,7 @@ namespace CCSnippets
             var builder = new StringBuilder(s, s.Length * n);
             for (int i = 1; i < n; i++)
                 builder.Append(s);
+            Contract.Assume(builder.ToString().Length == s.Length * n);
             return builder.ToString();
         }
 
@@ -59,28 +43,18 @@ namespace CCSnippets
             Contract.Ensures(Contract.Result<string>() != null);
             return input;
         }
-        
-        [Pure]
-        public static bool IsTrimmed(string text) {
-            if (text == null)
-                return false;
-            if (text.Length == 0)
-                return true;
-            if (Char.IsWhiteSpace(text[0]))
-                return false;
-            return text.Length == 1 || !Char.IsWhiteSpace(text[text.Length - 1]);
-        }
 
         public static string WordTitleCase(string input) {
             if (String.IsNullOrEmpty(input))
                 throw new ArgumentException("Must not be null or empty.", "input");
-            if (!IsTrimmed(input))
-                throw new ArgumentException("Must be trimmed.", "input");
-            Contract.EndContractBlock();
+            Contract.Ensures(Contract.Result<string>() != null);
+            Contract.Ensures(Contract.Result<string>().Length == input.Length);
+
             var builder = new System.Text.StringBuilder(input.Length);
             builder.Append(Char.ToUpper(input[0]));
             for (int i = 1; i < input.Length; i++)
                 builder.Append(Char.ToLower(input[i]));
+            Contract.Assume(builder.ToString().Length == input.Length);
             return builder.ToString();
         }
 

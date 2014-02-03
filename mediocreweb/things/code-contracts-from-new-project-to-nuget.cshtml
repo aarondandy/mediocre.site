@@ -210,23 +210,11 @@
     <p>
       When a method is publicly accessible (public or protected) from outside an assembly I use the standard method of specifying preconditions as shown in the following example.
     </p>
-    <pre class="brush: csharp;">[Pure] // must be pure to use in contract methods
-public static bool IsTrimmed(string text) {
-    if (text == null)
-        return false;
-    if (text.Length == 0)
-        return true;
-    if (Char.IsWhiteSpace(text[0]))
-        return false;
-    return text.Length == 1 || !Char.IsWhiteSpace(text[text.Length - 1]);
-}
-
-public static string WordTitleCase(string input) {
+    <pre class="brush: csharp;">public static string WordTitleCase(string input) {
     if (String.IsNullOrEmpty(input))
         throw new ArgumentException("Must not be null or empty.", "input");
-    if (!IsTrimmed(input))
-        throw new ArgumentException("Must be trimmed.", "input");
     Contract.EndContractBlock();
+
     var builder = new System.Text.StringBuilder(input.Length);
     builder.Append(Char.ToUpper(input[0]));
     for (int i = 1; i < input.Length; i++)
@@ -286,7 +274,7 @@ public static string WordTitleCase(string input) {
         <p>
           The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.ensures(v=vs.110).aspx">Contract.Ensures</a> methods
           allow the specification of postconditions that hold when a method returns a value or when a void method executes its last statement.
-          I most often use these to describe a value that is returned (<a href="http://msdn.microsoft.com/en-us/library/dd412873(v=vs.110).aspx">Contract.Result</a>)
+          I most often use these to describe the value that is returned (using <a href="http://msdn.microsoft.com/en-us/library/dd412873(v=vs.110).aspx">Contract.Result</a>)
           but they can also describe object state.
         </p>
       </dd>
@@ -298,50 +286,82 @@ public static string WordTitleCase(string input) {
           These generic methods are similar to Contract.Ensures but also require a generic argument that specifies the exception type they apply to.
           These postconditions are very important when writing exception safe code.
         </p>
-        <div class="panel panel-info">
-          <div class="panel-heading">Example: Object state preserved on throw.</div>
-          <div class="panel-body">
-            <pre class="brush: csharp">public class Matrix2 {
-    public double E00;
-    public double E01;
-    public double E10;
-    public double E11;
-    public void Invert() {
-        if (Double.IsNaN(E00)) throw new InvalidOperationException();
-        if (Double.IsNaN(E01)) throw new InvalidOperationException();
-        if (Double.IsNaN(E10)) throw new InvalidOperationException();
-        if (Double.IsNaN(E11)) throw new InvalidOperationException();
-        // don't mutate when NoInverseException is thrown
-        Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
-            Contract.OldValue(E00) == E00
-            && Contract.OldValue(E01) == E01
-            && Contract.OldValue(E10) == E10
-            && Contract.OldValue(E11) == E11);
-        var determinant = (E00 * E11) - (E10 * E01);
-        if (0 == determinant
-            || Double.IsNaN(determinant)
-            || Double.IsInfinity(determinant))
-            throw new NoInverseException(); // can't find inverse
-        var temp = E00;
-        E00 = E11 / determinant;
-        E11 = temp / determinant;
-        temp = -determinant;
-        E01 = E01 / temp;
-        E10 = E10 / temp;
-    }
+
+        <pre class="brush: csharp">public class Matrix2 {
+  public double E00;
+  public double E01;
+  public double E10;
+  public double E11;
+  public void Invert() {
+    if (Double.IsNaN(E00)) throw new InvalidOperationException();
+    if (Double.IsNaN(E01)) throw new InvalidOperationException();
+    if (Double.IsNaN(E10)) throw new InvalidOperationException();
+    if (Double.IsNaN(E11)) throw new InvalidOperationException();
+    // don't mutate when NoInverseException is thrown
+    Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
+        Contract.OldValue(E00) == E00
+        && Contract.OldValue(E01) == E01
+        && Contract.OldValue(E10) == E10
+        && Contract.OldValue(E11) == E11);
+    var determinant = (E00 * E11) - (E10 * E01);
+    if (0 == determinant
+        || Double.IsNaN(determinant)
+        || Double.IsInfinity(determinant))
+        throw new NoInverseException(); // can't find inverse
+    var temp = E00;
+    E00 = E11 / determinant;
+    E11 = temp / determinant;
+    temp = -determinant;
+    E01 = E01 / temp;
+    E10 = E10 / temp;
+  }
 }</pre>
-          </div>
-        </div>
 
         
       </dd>
     </dl>
 
-
-
-
-
     <h3>Invariants</h3>
+    <p>
+      Using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.invariant(v=vs.110).aspx">Contract.Invariant</a>
+      allows for the specification of object invariants. These invariants are specified in one special instance method of the class
+      with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethodAttribute</a>
+      and are not permitted in any other method contract block. The name of the method is not important but <code>ObjectInvariants</code>
+      works well enough.
+    </p>
+    <pre class="brush: csharp">public class AxisAlignedRectangle {
+  public AxisAlignedRectangle(double xMin, double xMax, double yMin, double yMax) {
+    if (Double.IsNaN(xMin)) throw new ArgumentException("NaN", "xMin");
+    if (Double.IsNaN(xMax)) throw new ArgumentException("NaN", "xMax");
+    if (Double.IsNaN(yMin)) throw new ArgumentException("NaN", "yMin");
+    if (Double.IsNaN(yMax)) throw new ArgumentException("NaN", "yMax");
+    if (!(xMin <= xMax)) throw new ArgumentException("xMin must be less or equal to xMax");
+    if (!(yMin <= yMax)) throw new ArgumentException("yMin must be less or equal to yMax");
+    Contract.Ensures(XMin == xMin);
+    Contract.Ensures(YMin == yMin);
+    Contract.Ensures(XMax == xMax);
+    Contract.Ensures(YMax == yMax);
+    XMin = xMin;
+    XMax = xMax;
+    YMin = yMin;
+    YMax = yMax;
+  }
+
+  public double XMin { get; private set; }
+  public double XMax { get; private set; }
+  public double YMin { get; private set; }
+  public double YMax { get; private set; }
+
+  [ContractInvariantMethod]
+  private void ObjectInvariants() {
+    Contract.Invariant(!Double.IsNaN(XMin));
+    Contract.Invariant(!Double.IsNaN(XMax));
+    Contract.Invariant(!Double.IsNaN(YMin));
+    Contract.Invariant(!Double.IsNaN(YMax));
+    Contract.Invariant(XMin <= XMax);
+    Contract.Invariant(YMin <= YMax);
+  }
+}</pre>
 
     <h2>Purity</h2>
 
