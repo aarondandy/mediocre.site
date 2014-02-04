@@ -7,14 +7,19 @@ namespace CCSnippets
     class Program
     {
         static void Main(string[] args) {
-            var a = AxisAlignedRectangle.Create(1, 2, 3, 4);
-            var b = AxisAlignedRectangle.Create(4, 3, 2, 1);
-            var c = AxisAlignedRectangle.Enclose(a, b);
-            var d = AxisAlignedRectangle.Enclose(b, a);
-            var e = AxisAlignedRectangle.Enclose(a, a);
-            var f = AxisAlignedRectangle.Enclose(
-                new AxisAlignedRectangle(1, 3, 0, 1),
-                new AxisAlignedRectangle(3, 4, 0, 1));
+            var a = Range.Create(1, 2);
+            var b = Range.Create(4, 3);
+            var c = Range.Enclose(a, b);
+            var d = Range.Enclose(b, a);
+            var e = Range.Enclose(a, a);
+
+            Contract.Assume(!(1 > Double.NaN));
+            Contract.Assume(!(3 > Double.NaN));
+            Contract.Assume(!(Double.NaN > 1));
+
+            var fa = new Range(1, Double.NaN);
+            var fb = new Range(Double.NaN, 3);
+            var f = Range.Enclose(fa, fb);
 
             Console.WriteLine(a);
             Console.WriteLine(b);
@@ -23,11 +28,24 @@ namespace CCSnippets
             Console.WriteLine(e);
             Console.WriteLine(f);
 
+            var m = new Matrix2 {
+                E00 = Double.NaN,
+                E01 = 2,
+                E10 = 3,
+                E11 = Double.NaN
+            };
+            try {
+                m.Invert();
+            } catch(NoInverseException){ }
+
+            Console.WriteLine(m.E00);
+
             Console.ReadKey();
+
         }
 
         internal static string Multiply(string s, int n) {
-            Contract.Requires(n > 0);
+            Contract.Requires(n >= 0);
             Contract.Requires(s != null);
             Contract.Ensures(Contract.Result<string>() != null);
             Contract.Ensures(Contract.Result<string>().Length == s.Length * n);
@@ -82,7 +100,7 @@ namespace CCSnippets
             Contract.EndContractBlock(); // a hint
             // not a part of the contract block
             // but will be in all builds to enforce.
-            // must be seperate because I am using
+            // must be separate because I am using
             // Custom Parameter Validation
             if (text == null)
                 throw new ArgumentNullException("text");

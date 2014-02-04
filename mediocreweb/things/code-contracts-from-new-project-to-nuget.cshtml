@@ -288,33 +288,29 @@
         </p>
 
         <pre class="brush: csharp">public class Matrix2 {
-  public double E00;
-  public double E01;
-  public double E10;
-  public double E11;
-  public void Invert() {
-    if (Double.IsNaN(E00)) throw new InvalidOperationException();
-    if (Double.IsNaN(E01)) throw new InvalidOperationException();
-    if (Double.IsNaN(E10)) throw new InvalidOperationException();
-    if (Double.IsNaN(E11)) throw new InvalidOperationException();
-    // don't mutate when NoInverseException is thrown
-    Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
-        Contract.OldValue(E00) == E00
-        && Contract.OldValue(E01) == E01
-        && Contract.OldValue(E10) == E10
-        && Contract.OldValue(E11) == E11);
-    var determinant = (E00 * E11) - (E10 * E01);
-    if (0 == determinant
-        || Double.IsNaN(determinant)
-        || Double.IsInfinity(determinant))
-        throw new NoInverseException(); // can't find inverse
-    var temp = E00;
-    E00 = E11 / determinant;
-    E11 = temp / determinant;
-    temp = -determinant;
-    E01 = E01 / temp;
-    E10 = E10 / temp;
-  }
+    public double E00;
+    public double E01;
+    public double E10;
+    public double E11;
+    public void Invert() {
+        Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
+            Contract.OldValue(E00).Equals(E00)
+            && Contract.OldValue(E01).Equals(E01)
+            && Contract.OldValue(E10).Equals(E10)
+            && Contract.OldValue(E11).Equals(E11),
+            "don't mutate when no inverse");
+
+        var determinant = (E00 * E11) - (E10 * E01);
+        if (0 == determinant || Double.IsNaN(determinant) || Double.IsInfinity(determinant))
+            throw new NoInverseException();
+
+        var temp = E00;
+        E00 = E11 / determinant;
+        E11 = temp / determinant;
+        temp = -determinant;
+        E01 = E01 / temp;
+        E10 = E10 / temp;
+    }
 }</pre>
 
         
@@ -329,38 +325,38 @@
       and are not permitted in any other method contract block. The name of the method is not important but <code>ObjectInvariants</code>
       works well enough.
     </p>
-    <pre class="brush: csharp">public class AxisAlignedRectangle {
-  public AxisAlignedRectangle(double xMin, double xMax, double yMin, double yMax) {
-    if (Double.IsNaN(xMin)) throw new ArgumentException("NaN", "xMin");
-    if (Double.IsNaN(xMax)) throw new ArgumentException("NaN", "xMax");
-    if (Double.IsNaN(yMin)) throw new ArgumentException("NaN", "yMin");
-    if (Double.IsNaN(yMax)) throw new ArgumentException("NaN", "yMax");
-    if (!(xMin <= xMax)) throw new ArgumentException("xMin must be less or equal to xMax");
-    if (!(yMin <= yMax)) throw new ArgumentException("yMin must be less or equal to yMax");
-    Contract.Ensures(XMin == xMin);
-    Contract.Ensures(YMin == yMin);
-    Contract.Ensures(XMax == xMax);
-    Contract.Ensures(YMax == yMax);
-    XMin = xMin;
-    XMax = xMax;
-    YMin = yMin;
-    YMax = yMax;
-  }
+    <pre class="brush: csharp">public class Range {
+    public static Range Enclose(Range a, Range b) {
+        if (a == null) throw new ArgumentNullException("a");
+        if (b == null) throw new ArgumentNullException("b");
+        Contract.Ensures(!(Contract.Result&lt;Range&gt;().Low > a.Low));
+        Contract.Ensures(!(Contract.Result&lt;Range&gt;().Low > b.Low));
+        Contract.Ensures(!(Contract.Result&lt;Range&gt;().High < a.High));
+        Contract.Ensures(!(Contract.Result&lt;Range&gt;().High < b.High));
+        return new Range(
+            a.Low <= b.Low ? a.Low : b.Low,
+            a.High > b.High ? a.High : b.High);
+    }
 
-  public double XMin { get; private set; }
-  public double XMax { get; private set; }
-  public double YMin { get; private set; }
-  public double YMax { get; private set; }
+    public Range(double low, double high) {
+        Contract.Requires(!(low > high) || Double.IsNaN(low) || Double.IsNaN(high));
+        Contract.Ensures(Low.Equals(low));
+        Contract.Ensures(High.Equals(high));
+        Contract.EndContractBlock();
+        // this is the real precondition because CC does not understand Double.NaN
+        if (low > high) throw new ArgumentException("low must be less or equal to high");
+        Low = low;
+        High = high;
+    }
 
-  [ContractInvariantMethod]
-  private void ObjectInvariants() {
-    Contract.Invariant(!Double.IsNaN(XMin));
-    Contract.Invariant(!Double.IsNaN(XMax));
-    Contract.Invariant(!Double.IsNaN(YMin));
-    Contract.Invariant(!Double.IsNaN(YMax));
-    Contract.Invariant(XMin <= XMax);
-    Contract.Invariant(YMin <= YMax);
-  }
+    public double Low { get; private set; }
+    public double High { get; private set; }
+
+    [ContractInvariantMethod]
+    private void ObjectInvariants() {
+        Contract.Invariant(!(Low > High));
+    }
+
 }</pre>
 
     <h2>Purity</h2>
