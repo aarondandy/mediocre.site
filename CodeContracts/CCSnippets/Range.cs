@@ -22,9 +22,8 @@ namespace CCSnippets
             Contract.Ensures(
                 (Contract.Result<Range>().Low.Equals(a) &&Contract.Result<Range>().High.Equals(b))
                 || (Contract.Result<Range>().Low.Equals(b) && Contract.Result<Range>().High.Equals(a)));
-            double temp;
             if (a > b) {
-                temp = a;
+                var temp = a;
                 a = b;
                 b = temp;
             }

@@ -277,6 +277,16 @@
           I most often use these to describe the value that is returned (using <a href="http://msdn.microsoft.com/en-us/library/dd412873(v=vs.110).aspx">Contract.Result</a>)
           but they can also describe object state.
         </p>
+
+        <pre class="brush: csharp">public static IntRange Enclose(IntRange a, IntRange b) {
+    if (a == null) throw new ArgumentNullException("a");
+    if (b == null) throw new ArgumentNullException("b");
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= a.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= b.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= a.High);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= b.High);
+    return new IntRange(Math.Min(a.Low, b.Low), Math.Max(a.High, b.High));
+}</pre>
       </dd>
       <dt>Contract.EnsuresOnThrow</dt>
       <dd>
@@ -312,52 +322,108 @@
         E10 = E10 / temp;
     }
 }</pre>
-
-        
       </dd>
     </dl>
 
     <h3>Invariants</h3>
     <p>
       Using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.invariant(v=vs.110).aspx">Contract.Invariant</a>
-      allows for the specification of object invariants. These invariants are specified in one special instance method of the class
-      with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethodAttribute</a>
-      and are not permitted in any other method contract block. The name of the method is not important but <code>ObjectInvariants</code>
-      works well enough.
+      allows for the specification of contracts that must always be true for an object instance. These invariants are specified only in one instance method of the class
+      with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethodAttribute</a>.
+      The name of the method is not important but <code>ObjectInvariants</code> works well enough.
+      Acting as something like both a Contract.Require and Contract.Ensures for each method an invariant helps to reduce the number of contracts that must be written.
+      In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object which can even reduce code.
     </p>
-    <pre class="brush: csharp">public class Range {
-    public static Range Enclose(Range a, Range b) {
-        if (a == null) throw new ArgumentNullException("a");
-        if (b == null) throw new ArgumentNullException("b");
-        Contract.Ensures(!(Contract.Result&lt;Range&gt;().Low > a.Low));
-        Contract.Ensures(!(Contract.Result&lt;Range&gt;().Low > b.Low));
-        Contract.Ensures(!(Contract.Result&lt;Range&gt;().High < a.High));
-        Contract.Ensures(!(Contract.Result&lt;Range&gt;().High < b.High));
-        return new Range(
-            a.Low <= b.Low ? a.Low : b.Low,
-            a.High > b.High ? a.High : b.High);
-    }
 
-    public Range(double low, double high) {
-        Contract.Requires(!(low > high) || Double.IsNaN(low) || Double.IsNaN(high));
-        Contract.Ensures(Low.Equals(low));
-        Contract.Ensures(High.Equals(high));
+    <pre class="brush: csharp">private static readonly Random _random = new Random();
+private static readonly SpeechSynthesizer _narrator = new SpeechSynthesizer();
+
+static void Main(string[] args) {
+    _narrator.SelectVoiceByHints(VoiceGender.Neutral, VoiceAge.Senior);
+    var v = new FictionalCreature("Vertesaur", VoiceGender.Female, VoiceAge.Child) {
+      Synth = { Rate = 2 } };
+    var p = new FictionalCreature("Pigeoid", VoiceGender.Female, VoiceAge.Teen) {
+      Synth = { Rate = 2 } };
+    Console.WriteLine("Ctrl+C to end.");
+    while(true) {
+        SpeakLine(v, 4 + _random.Next(4), _random.Next(2) == 0);
+        SpeakLine(p, 3 + _random.Next(3), _random.Next(2) == 0);
+    }
+}
+
+public static void SpeakLine(FictionalCreature critter, int words, bool exclaim) {
+    Contract.Requires(critter != null);
+    Contract.Requires(words > 0);
+    var critterText = critter.MakeSentence(words, exclaim);
+    Console.WriteLine("{0} says, \"{1}\"", critter.Name, critterText);
+    _narrator.Speak(String.Format("{0} says,", critter.Name));
+    critter.Synth.Speak(critterText);
+}
+
+public class FictionalCreature {
+    public FictionalCreature(string name, VoiceGender gender, VoiceAge age) {
+        if (String.IsNullOrEmpty(name)) throw new ArgumentException();
+        if (name.Length < 4) throw new ArgumentException();
         Contract.EndContractBlock();
-        // this is the real precondition because CC does not understand Double.NaN
-        if (low > high) throw new ArgumentException("low must be less or equal to high");
-        Low = low;
-        High = high;
+        Name = name;
+        Synth = new SpeechSynthesizer();
+        Synth.SelectVoiceByHints(gender, age);
     }
 
-    public double Low { get; private set; }
-    public double High { get; private set; }
+    public string Name { get; private set; }
+    public SpeechSynthesizer Synth { get; private set; }
 
     [ContractInvariantMethod]
     private void ObjectInvariants() {
-        Contract.Invariant(!(Low > High));
+        Contract.Invariant(!String.IsNullOrEmpty(Name));
+        Contract.Invariant(Name.Length >= 4);
+        Contract.Invariant(Synth != null);
     }
 
-}</pre>
+    public string MakeSentence(int words, bool exclaim = true) {
+        if (words <= 0) throw new ArgumentException();
+        Contract.Ensures(!String.IsNullOrEmpty(Contract.Result&lt;string&gt;()));
+        var builder = new StringBuilder(WordTitleCase(MakeWord()));
+        for (var i = 1; i < words; i++) {
+            builder.Append(' ');
+            builder.Append(MakeWord().ToLower());
+        }
+        builder.Append(exclaim ? '!' : '.');
+        var finalText = builder.ToString();
+        Contract.Assume(!String.IsNullOrEmpty(finalText));
+        return builder.ToString();
+    }
+
+    public string MakeWord() {
+        Contract.Ensures(!String.IsNullOrEmpty(Contract.Result&lt;string&gt;()));
+        Contract.Ensures(Contract.Result&lt;string&gt;().Length >= 2);
+        var type = _random.Next(3);
+        string word;
+        if (type == 0) {
+            word = Name;
+        }
+        else {
+            var pivot = _random.Next(Name.Length - 2);
+            Contract.Assume(pivot >= 0);
+            Contract.Assume(pivot < Name.Length - 2);
+            if (type == 1) {
+                word = Name.Substring(pivot);
+                Contract.Assume(word.Length == Name.Length - pivot);
+            }
+            else {
+                word = Name.Substring(0, pivot + 2);
+                Contract.Assume(word.Length == pivot + 2);
+            }
+        }
+        return word;
+    }
+}
+</pre>
+
+    <p>
+      In the contrived example above the invariants help ensure that all words are produced with at least two characters.
+      Without them the sentences would make no sense.
+    </p>
 
     <h2>Purity</h2>
 

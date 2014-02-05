@@ -1,46 +1,96 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
+using System.Speech.Synthesis;
 using System.Text;
 
 namespace CCSnippets
 {
     class Program
     {
+
+        private static readonly Random _random = new Random();
+        private static readonly SpeechSynthesizer _narrator = new SpeechSynthesizer();
+
         static void Main(string[] args) {
-            var a = Range.Create(1, 2);
-            var b = Range.Create(4, 3);
-            var c = Range.Enclose(a, b);
-            var d = Range.Enclose(b, a);
-            var e = Range.Enclose(a, a);
+            _narrator.SelectVoiceByHints(VoiceGender.Neutral, VoiceAge.Senior);
 
-            Contract.Assume(!(1 > Double.NaN));
-            Contract.Assume(!(3 > Double.NaN));
-            Contract.Assume(!(Double.NaN > 1));
+            var v = new FictionalCreature("Vertesaur", VoiceGender.Female, VoiceAge.Child) { Synth = { Rate = 2 } };
+            var p = new FictionalCreature("Pigeoid", VoiceGender.Female, VoiceAge.Teen) { Synth = { Rate = 2 } }; ;
+            Console.WriteLine("Ctrl+C to end.");
+            while(true) {
+                SpeakLine(v, 4 + _random.Next(4), _random.Next(2) == 0);
+                SpeakLine(p, 3 + _random.Next(3), _random.Next(2) == 0);
+            }
+        }
 
-            var fa = new Range(1, Double.NaN);
-            var fb = new Range(Double.NaN, 3);
-            var f = Range.Enclose(fa, fb);
+        public static void SpeakLine(FictionalCreature critter, int words, bool exclaim) {
+            Contract.Requires(critter != null);
+            Contract.Requires(words > 0);
+            var critterText = critter.MakeSentence(words, exclaim);
+            Console.WriteLine("{0} says, \"{1}\"", critter.Name, critterText);
+            _narrator.Speak(String.Format("{0} says,", critter.Name));
+            critter.Synth.Speak(critterText);
+        }
 
-            Console.WriteLine(a);
-            Console.WriteLine(b);
-            Console.WriteLine(c);
-            Console.WriteLine(d);
-            Console.WriteLine(e);
-            Console.WriteLine(f);
+        public class FictionalCreature
+        {
 
-            var m = new Matrix2 {
-                E00 = Double.NaN,
-                E01 = 2,
-                E10 = 3,
-                E11 = Double.NaN
-            };
-            try {
-                m.Invert();
-            } catch(NoInverseException){ }
+            public FictionalCreature(string name, VoiceGender gender, VoiceAge age) {
+                if (String.IsNullOrEmpty(name)) throw new ArgumentException();
+                if (name.Length < 4) throw new ArgumentException();
+                Contract.EndContractBlock();
+                Name = name;
+                Synth = new SpeechSynthesizer();
+                Synth.SelectVoiceByHints(gender, age);
+            }
 
-            Console.WriteLine(m.E00);
+            public string Name { get; private set; }
+            public SpeechSynthesizer Synth { get; private set; }
 
-            Console.ReadKey();
+            [ContractInvariantMethod]
+            private void ObjectInvariants() {
+                Contract.Invariant(!String.IsNullOrEmpty(Name));
+                Contract.Invariant(Name.Length >= 4);
+                Contract.Invariant(Synth != null);
+            }
+
+            public string MakeSentence(int words, bool exclaim = true) {
+                if (words <= 0) throw new ArgumentException();
+                Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+                var builder = new StringBuilder(WordTitleCase(MakeWord()));
+                for (var i = 1; i < words; i++) {
+                    builder.Append(' ');
+                    builder.Append(MakeWord().ToLower());
+                }
+                builder.Append(exclaim ? '!' : '.');
+                var finalText = builder.ToString();
+                Contract.Assume(!String.IsNullOrEmpty(finalText));
+                return builder.ToString();
+            }
+
+            public string MakeWord() {
+                Contract.Ensures(!String.IsNullOrEmpty(Contract.Result<string>()));
+                Contract.Ensures(Contract.Result<string>().Length >= 2);
+                var type = _random.Next(3);
+                string word;
+                if (type == 0) {
+                    word = Name;
+                }
+                else {
+                    var pivot = _random.Next(Name.Length - 2);
+                    Contract.Assume(pivot >= 0);
+                    Contract.Assume(pivot < Name.Length - 2);
+                    if (type == 1) {
+                        word = Name.Substring(pivot);
+                        Contract.Assume(word.Length == Name.Length - pivot);
+                    }
+                    else {
+                        word = Name.Substring(0, pivot + 2);
+                        Contract.Assume(word.Length == pivot + 2);
+                    }
+                }
+                return word;
+            }
 
         }
 
