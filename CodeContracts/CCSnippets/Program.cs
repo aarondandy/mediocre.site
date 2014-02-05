@@ -63,8 +63,7 @@ namespace CCSnippets
                     builder.Append(MakeWord().ToLower());
                 }
                 builder.Append(exclaim ? '!' : '.');
-                var finalText = builder.ToString();
-                Contract.Assume(!String.IsNullOrEmpty(finalText));
+                Contract.Assume(!String.IsNullOrEmpty(builder.ToString()));
                 return builder.ToString();
             }
 

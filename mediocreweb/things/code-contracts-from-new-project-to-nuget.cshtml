@@ -335,6 +335,7 @@
       In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object which can even reduce code.
     </p>
 
+    <h3>All Together Now</h3>
     <pre class="brush: csharp">private static readonly Random _random = new Random();
 private static readonly SpeechSynthesizer _narrator = new SpeechSynthesizer();
 
@@ -389,8 +390,7 @@ public class FictionalCreature {
             builder.Append(MakeWord().ToLower());
         }
         builder.Append(exclaim ? '!' : '.');
-        var finalText = builder.ToString();
-        Contract.Assume(!String.IsNullOrEmpty(finalText));
+        Contract.Assume(!String.IsNullOrEmpty(builder.ToString()));
         return builder.ToString();
     }
 
@@ -421,8 +421,7 @@ public class FictionalCreature {
 </pre>
 
     <p>
-      In the contrived example above the invariants help ensure that all words are produced with at least two characters.
-      Without them the sentences would make no sense.
+      In the contrived example above Code Contracts helps ensure that all words are produced with at least two characters, otherwise the sentences would make no sense!
     </p>
 
     <h2>Purity</h2>
