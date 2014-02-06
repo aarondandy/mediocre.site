@@ -14,6 +14,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeContracts", "CodeContra
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CCSnippets", "CodeContracts\CCSnippets\CCSnippets.csproj", "{27421961-8CC2-4BD9-99EA-F0FC26F4D1B6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "VertesaurSays", "CodeContracts\VertesaurSays\VertesaurSays.csproj", "{F662CE66-D61E-4852-BC58-FE5E88B5E891}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,11 +35,18 @@ Global
 		{27421961-8CC2-4BD9-99EA-F0FC26F4D1B6}.DebugCC|Any CPU.Build.0 = DebugCC|Any CPU
 		{27421961-8CC2-4BD9-99EA-F0FC26F4D1B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{27421961-8CC2-4BD9-99EA-F0FC26F4D1B6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.DebugCC|Any CPU.ActiveCfg = DebugCC|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.DebugCC|Any CPU.Build.0 = DebugCC|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{27421961-8CC2-4BD9-99EA-F0FC26F4D1B6} = {0002ED63-9B2B-4A54-A5FC-B9B5360459D4}
+		{F662CE66-D61E-4852-BC58-FE5E88B5E891} = {0002ED63-9B2B-4A54-A5FC-B9B5360459D4}
 	EndGlobalSection
 EndGlobal

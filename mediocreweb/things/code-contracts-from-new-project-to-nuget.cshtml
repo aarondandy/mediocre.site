@@ -397,25 +397,13 @@ public class FictionalCreature {
     public string MakeWord() {
         Contract.Ensures(!String.IsNullOrEmpty(Contract.Result&lt;string&gt;()));
         Contract.Ensures(Contract.Result&lt;string&gt;().Length >= 2);
-        var type = _random.Next(3);
-        string word;
-        if (type == 0) {
-            word = Name;
-        }
-        else {
-            var pivot = _random.Next(Name.Length - 2);
-            Contract.Assume(pivot >= 0);
-            Contract.Assume(pivot < Name.Length - 2);
-            if (type == 1) {
-                word = Name.Substring(pivot);
-                Contract.Assume(word.Length == Name.Length - pivot);
-            }
-            else {
-                word = Name.Substring(0, pivot + 2);
-                Contract.Assume(word.Length == pivot + 2);
-            }
-        }
-        return word;
+        var type = Random.Next(3);
+        if (type == 0)
+              return Name;
+        var pivot = Random.Next(Name.Length - 2);
+        return type == 1
+            ? Name.Substring(pivot)
+            : Name.Substring(0, pivot + 2);
     }
 }
 </pre>
