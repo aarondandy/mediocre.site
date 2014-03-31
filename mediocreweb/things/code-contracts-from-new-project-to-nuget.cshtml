@@ -243,7 +243,7 @@
         <pre class="brush: csharp">public class Derrived : Base {
   public Derrived(string value)
     : base(value) {
-    // enforced in Base.Base
+    // enforced in the Base constructor
     Contract.Requires(value != null);
   }
 }</pre>
@@ -281,10 +281,10 @@
         <pre class="brush: csharp">public static IntRange Enclose(IntRange a, IntRange b) {
     if (a == null) throw new ArgumentNullException("a");
     if (b == null) throw new ArgumentNullException("b");
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= a.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= b.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= a.High);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= b.High);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= a.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= b.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= a.High);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= b.High);
     return new IntRange(Math.Min(a.Low, b.Low), Math.Max(a.High, b.High));
 }</pre>
       </dd>
@@ -341,7 +341,7 @@ private static readonly SpeechSynthesizer _narrator = new SpeechSynthesizer();
 
 static void Main(string[] args) {
     _narrator.SelectVoiceByHints(VoiceGender.Neutral, VoiceAge.Senior);
-    var v = new FictionalCreature("Vertesaur", VoiceGender.Female, VoiceAge.Child) {
+    var v = new FictionalCreature("Vertesaur", VoiceGender.Male, VoiceAge.Child) {
       Synth = { Rate = 2 } };
     var p = new FictionalCreature("Pigeoid", VoiceGender.Female, VoiceAge.Teen) {
       Synth = { Rate = 2 } };
@@ -382,7 +382,7 @@ public class FictionalCreature {
     }
 
     public string MakeSentence(int words, bool exclaim = true) {
-        if (words <= 0) throw new ArgumentException();
+        if (words &lt;= 0) throw new ArgumentException();
         Contract.Ensures(!String.IsNullOrEmpty(Contract.Result&lt;string&gt;()));
         var builder = new StringBuilder(WordTitleCase(MakeWord()));
         for (var i = 1; i < words; i++) {
