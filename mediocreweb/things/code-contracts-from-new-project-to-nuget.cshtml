@@ -13,6 +13,9 @@
     top: 15px;
     color: #888;
   }
+  .todo{
+    color: #f00;
+  }
 </style>
 <div class="row">
   <div class="col-md-3">
@@ -35,8 +38,8 @@
       For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
     </p>
 
-    TODO: more DBC explanations
-    TODO: examples
+    <div class="todo">TODO: more DBC explanations</div>
+    <div class="todo">TODO: examples</div>
 
     <h2>Getting Started</h2>
     <h3>What You Need</h3>
@@ -46,6 +49,7 @@
       <li>.NET 4.0</li>
       <li><a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a></li>
     </ul>
+    <div class="todo">TODO: remove or greatly simplify</div>
     <p>
       You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio extension.
       There may be ways to work around that but you will have to look into that yourself.
@@ -168,13 +172,15 @@
         </small>
       </div>
     </div>
+    <div class="todo">Link to a diff showing the changes in a csproj file</div>
     
     <h2>Writing Contracts</h2>
 
     <h3>Method Anatomy with Code Contracts</h3>
-    TODO!
+    <div class="todo">Image of method anatomy and maybe a link to the documentation?</div>
 
     <h3>Preconditions</h3>
+    <div class="todo">Rewrite this</div>
     <p>
       As preconditions are to be checked before a method performs its real work they are the first statements within the contract block of a method.
       Preconditions can be written in two forms:
@@ -199,7 +205,7 @@
           The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
           are another way to specify preconditions. They act similar to an assertion exept they are only compiled into my programs when using the DebugCC configuration.
           While this seems pointless it has its uses.
-          This approach supplies the Code Contracts static analysis tools with information but can be ommited from the software in release builds.
+          This approach supplies the Code Contracts static analysis tools with information but can be omitted from the software in release builds.
           Also note that while Contract.Requires does have a generic option available I do <em><u><strong>not</strong></u></em> use it.
           The generic versions require a post build step to run correctly while standard preconditions work just fine.
         </p>
@@ -249,7 +255,7 @@
 }</pre>
       </div>
       <div class="col-md-6">
-        Orignal preconditions:
+        Original preconditions:
         <pre class="brush: csharp">public class Base {
   public string Value { get; set; }
   public Base(string value) {
@@ -281,10 +287,10 @@
         <pre class="brush: csharp">public static IntRange Enclose(IntRange a, IntRange b) {
     if (a == null) throw new ArgumentNullException("a");
     if (b == null) throw new ArgumentNullException("b");
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= a.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low <= b.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= a.High);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High >= b.High);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= a.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= b.Low);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= a.High);
+    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= b.High);
     return new IntRange(Math.Min(a.Low, b.Low), Math.Max(a.High, b.High));
 }</pre>
       </dd>
@@ -294,7 +300,8 @@
           Postconditions can also be made for exceptional method termination using the
           <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.ensuresonthrow(v=vs.110).aspx">Contract.EnsuresOnThrow</a> methods.
           These generic methods are similar to Contract.Ensures but also require a generic argument that specifies the exception type they apply to.
-          These postconditions are very important when writing exception safe code.
+          These postconditions can be important when writing exception safe code.
+          Note that while these methods are generic they are safe to use without a CCRewrite post compilation.
         </p>
 
         <pre class="brush: csharp">public class Matrix2 {
@@ -328,14 +335,16 @@
     <h3>Invariants</h3>
     <p>
       Using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.invariant(v=vs.110).aspx">Contract.Invariant</a>
-      allows for the specification of contracts that must always be true for an object instance. These invariants are specified only in one instance method of the class
-      with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethodAttribute</a>.
+      allows for the specification of contracts that must always be true for an object instance.
+      These invariants are specified only in one instance method of a class
+      with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethod</a> attribute.
       The name of the method is not important but <code>ObjectInvariants</code> works well enough.
       Acting as something like both a Contract.Require and Contract.Ensures for each method an invariant helps to reduce the number of contracts that must be written.
       In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object which can even reduce code.
     </p>
 
     <h3>All Together Now</h3>
+    <div class="todo">A simpler example would be better</div>
     <pre class="brush: csharp">private static readonly Random _random = new Random();
 private static readonly SpeechSynthesizer _narrator = new SpeechSynthesizer();
 
@@ -382,7 +391,7 @@ public class FictionalCreature {
     }
 
     public string MakeSentence(int words, bool exclaim = true) {
-        if (words <= 0) throw new ArgumentException();
+        if (words &lt;= 0) throw new ArgumentException();
         Contract.Ensures(!String.IsNullOrEmpty(Contract.Result&lt;string&gt;()));
         var builder = new StringBuilder(WordTitleCase(MakeWord()));
         for (var i = 1; i < words; i++) {
@@ -413,6 +422,40 @@ public class FictionalCreature {
     </p>
 
     <h2>Purity</h2>
+    <p>
+      All methods (properties too) that are used to write contract expressions must be pure.
+      Simply adding a <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.pureattribute(v=vs.110).aspx">Pure</a> attribute will flag a method as pure.
+    </p>
+    <div class="row">
+      <div class="col-md-6">
+        Method example:
+        <pre class="brush: csharp">
+[Pure]
+public double GetDistance(Point p){
+    var dx = p.X - X;
+    var dy = p.Y - Y;
+    return Math.Sqrt((dx*dx)+(dy*dy));
+}
+</pre>
+      </div>
+      <div class="col-md-6">
+        Property examples:
+        <pre class="brush: csharp">
+public string Name { [Pure] get; set; }
+
+public double Length {
+    [Pure] get {
+        return High - Low;
+    }
+}
+</pre>
+      </div>
+    </div>
+    <p>
+      When it comes to the meaning of purity I like to go by the <a href="http://en.wikipedia.org/wiki/Pure_function">pure function entry on Wikipedia</a>.
+      The truth though is that any method is pure if you say so as there is no enforcement (yet) but you should not go slapping Pure on everything.
+      Keep it to methods that always return the same value for their given inputs and don't have any <a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)">side effects</a>.
+    </p>
 
     <h2>Static Analysis</h2>
 
