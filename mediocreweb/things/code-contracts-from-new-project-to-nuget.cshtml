@@ -206,7 +206,7 @@
           are another way to specify preconditions. They act similar to an assertion exept they are only compiled into my programs when using the DebugCC configuration.
           While this seems pointless it has its uses.
           This approach supplies the Code Contracts static analysis tools with information but can be omitted from the software in release builds.
-          Also note that while Contract.Requires does have a generic option available I do <em><u><strong>not</strong></u></em> use it.
+          Also note that while Contract.Requires does have a generic option available I do <em><strong>not</strong></em> use it.
           The generic versions require a post build step to run correctly while standard preconditions work just fine.
         </p>
       </dd>
@@ -265,6 +265,10 @@
     Value = value;
   }
 }</pre>
+        Using Contract.Requires in these situations with my build configuration allows
+        these checks to be omitted in Release builds.
+        When combined with comprehensive tests and the Code Contracts static analysis tool
+        this can improve performance without sacrificing safety.
       </div>
     </div>
     <h3>Postconditions</h3>
@@ -424,7 +428,10 @@ public class FictionalCreature {
     <h2>Purity</h2>
     <p>
       All methods (properties too) that are used to write contract expressions must be pure.
-      Simply adding a <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.pureattribute(v=vs.110).aspx">Pure</a> attribute will flag a method as pure.
+      When it comes to the meaning of purity I like to go by the <a href="http://en.wikipedia.org/wiki/Pure_function">pure function entry on Wikipedia</a>.
+      The truth though is that any method is pure if you mark it with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.pureattribute(v=vs.110).aspx">Pure</a>
+      attribute as there is no enforcement (yet) but you should not go slapping Pure on everything.
+      Keep it to methods that always return the same value for their given inputs and don't have any <a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)">side effects</a>.
     </p>
     <div class="row">
       <div class="col-md-6">
@@ -432,9 +439,16 @@ public class FictionalCreature {
         <pre class="brush: csharp">
 [Pure]
 public double GetDistance(Point p){
-    var dx = p.X - X;
-    var dy = p.Y - Y;
+    var dx = p.X - this.X;
+    var dy = p.Y - this.Y;
     return Math.Sqrt((dx*dx)+(dy*dy));
+}
+// ...
+private void DoSomething(Point a, Point b){
+    Contract.Requires(
+        a.GetDistance(b) > 1.0,
+        "Must be far apart.");
+    // ...
 }
 </pre>
       </div>
@@ -448,32 +462,67 @@ public double Length {
         return High - Low;
     }
 }
+// ...
+private void DoSomething(){
+    Contract.Requires(this.Length > 2);
+    Contract.Requires(this.Name != "Nope!");
+    // ...
+}
 </pre>
       </div>
     </div>
-    <p>
-      When it comes to the meaning of purity I like to go by the <a href="http://en.wikipedia.org/wiki/Pure_function">pure function entry on Wikipedia</a>.
-      The truth though is that any method is pure if you say so as there is no enforcement (yet) but you should not go slapping Pure on everything.
-      Keep it to methods that always return the same value for their given inputs and don't have any <a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)">side effects</a>.
-    </p>
+    
 
     <h2>Static Analysis</h2>
+    <p>
+      The static analysis tool is where I see the largest benefit from Code Contracts.
+      Having assertions fire due to contract violations is nice but what I really want is to avoid the violation in the first place.
+      The static analysis tools are capable of analyzing the contracts as well as the program code to determine if contracts may be violated.
+      The handy underlines we are all used to for errors are helpful and you can see all potential violations in your output and error windows.
+    </p>
+    
+    <div class="todo">Add examples of violated contracts and their fixes.</div>
 
     <h2>Assume and Assert</h2>
+    <p>
+      Sometimes the static analysis tools can't figure something out or just don't have enough information.
+      In these situations we can provide hints to the tools about the state of our software.
+    </p>
 
     <h2>Conditional Contracts</h2>
+    <p>
+      
+    </p>
 
     <h2>Inheritance</h2>
+    <p>
+      
+    </p>
 
     <h2>Distribution</h2>
+    <p>
+      
+    </p>
 
-    <h3>Using Contracts</h3>
+    <h3>Using Other Contracts</h3>
+    <p>
+      
+    </p>
 
     <h3>NuGet</h3>
+    <p>
+      
+    </p>
     
     <h3>Signing</h3>
+    <p>
+      
+    </p>
 
     <h2>Final Thoughts</h2>
+    <p>
+      
+    </p>
 
   </div>
 </div>
