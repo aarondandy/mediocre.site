@@ -34,7 +34,7 @@
       for VB and C#. Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts(v=vs.110).aspx">System.Diagnostics.Contracts Namespace</a>
       included with .NET 4.0 and the <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
       define the behavior of your software and verify it at compile time as well as run time.
-      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replacement for testing.
+      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replancement for testing.
       For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
     </p>
 
@@ -477,8 +477,7 @@ private void DoSomething(){
     <p>
       The static analysis tool is where I see the largest benefit from Code Contracts.
       Having assertions fire due to contract violations is nice but what I really want is to avoid the violation in the first place.
-      The static analysis tools are capable of analyzing the contracts as well as the program code to determine if contracts may be violated.
-      The handy underlines we are all used to for errors are helpful and you can see all potential violations in your output and error windows.
+      The static analysis tools are capable of analyzing the contracts as well as the code to determine if contracts may be violated.
     </p>
     
     <div class="todo">Add examples of violated contracts and their fixes.</div>
@@ -501,8 +500,52 @@ private void DoSomething(){
 
     <h2>Distribution</h2>
     <p>
-      
+      When an assembly uses code contracts and is built with the Contract Reference Assembly option set to Build as in my Release and DebugCC configurations
+      a second assembly is produced that has contract information within it.
+      The contract information will be embedded within this rewritten contract assembly even if you disable the Runtime Checking as in my Release configuration.
+      Having this second assembly allows you to distribute your contracts and consume those made by others even if the referenced assembly
+      is built without contract information as in my Release builds.
     </p>
+    
+    <div class="well">
+    <p>Using my configurations your output directories will look similar to the following:</p>
+      <div class="media">
+        <span class="glyphicon glyphicon-folder-open pull-left"></span>
+        <div class="media-body">
+          <div>Debug</div>
+          <div><span class="glyphicon glyphicon glyphicon-file"></span> MyAssembly.dll</div>
+        </div>
+
+        <span class="glyphicon glyphicon-folder-open pull-left"></span>
+        <div class="media-body">
+          <div>DebugCC</div>
+          <div class="media" style="margin-top: 0">
+            <span class="glyphicon glyphicon-folder-open pull-left"></span>
+            <div class="media-body">
+              <div>CodeContracts</div>
+              <div><span class="glyphicon glyphicon glyphicon-file pull-left"></span> MyAssembly.Contracts.dll</div>
+            </div>
+          </div>
+          <span class="glyphicon glyphicon glyphicon-file pull-left"></span> MyAssembly.dll
+        </div>
+      
+        <span class="glyphicon glyphicon-folder-open pull-left"></span>
+        <div class="media-body">
+          <div>Release</div>
+          <div class="media" style="margin-top: 0">
+            <span class="glyphicon glyphicon-folder-open pull-left"></span>
+            <div class="media-body">
+              <div>CodeContracts</div>
+              <div><span class="glyphicon glyphicon glyphicon-file pull-left"></span> MyAssembly.Contracts.dll</div>
+            </div>
+          </div>
+          <span class="glyphicon glyphicon glyphicon-file pull-left"></span> MyAssembly.dll
+        </div>
+
+      </div>
+      
+    </div>
+
 
     <h3>Using Other Contracts</h3>
     <p>
