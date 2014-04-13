@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Speech.Synthesis;
+using System.Linq;
 using System.Text;
 
 namespace CCSnippets
@@ -8,9 +8,34 @@ namespace CCSnippets
     class Program
     {
 
-
         static void Main(string[] args) {
-            
+            Console.WriteLine(FindLongest(new []{"one","two","three"}));
+            Console.WriteLine(FindLongest(new string[0]));
+            Console.ReadKey();
+        }
+
+        static string FindLongest(string[] items) {
+            Contract.Requires(items != null);
+            Contract.Requires(Contract.ForAll(items, i => i != null));
+            //Contract.Ensures(Contract.Result<string>() != null);
+            if (items.Length == 0)
+                return null;
+            var largest = items[0];
+            for (int i = 1; i < items.Length; i++)
+                if (items[i].Length > largest.Length)
+                    largest = items[i];
+            return largest;
+        }
+
+        static string SwapLetters(string text, int a, int b) {
+            Contract.Requires(text != null);
+            Contract.Requires(a >= 0 && a < text.Length);
+            Contract.Requires(b >= 0 && b < text.Length);
+            var builder = new StringBuilder(text, text.Length);
+            var c = builder[a];
+            builder[a] = builder[b];
+            builder[b] = c;
+            return builder.ToString();
         }
 
         internal static string Multiply(string s, int n) {
@@ -37,7 +62,7 @@ namespace CCSnippets
             Contract.Ensures(Contract.Result<string>() != null);
             Contract.Ensures(Contract.Result<string>().Length == input.Length);
 
-            var builder = new System.Text.StringBuilder(input.Length);
+            var builder = new StringBuilder(input.Length);
             builder.Append(Char.ToUpper(input[0]));
             for (int i = 1; i < input.Length; i++)
                 builder.Append(Char.ToLower(input[i]));

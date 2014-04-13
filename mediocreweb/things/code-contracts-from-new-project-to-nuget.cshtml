@@ -203,11 +203,17 @@
       <dd>
         <p>
           The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
-          are another way to specify preconditions. They act similar to an assertion exept they are only compiled into my programs when using the DebugCC configuration.
+          are another way to specify preconditions. They act similar to an assertion except they are omitted from my programs when building the Release configuration
+          and more importantly they apply to the state of the method before it is executed.
           While this seems pointless it has its uses.
-          This approach supplies the Code Contracts static analysis tools with information but can be omitted from the software in release builds.
+          This approach supplies the Code Contracts static analysis tool with information but can be omitted from the software in release builds
+          offering safety without sacrificing performance.
+        </p>
+        <p>
           Also note that while Contract.Requires does have a generic option available I do <em><strong>not</strong></em> use it.
           The generic versions require a post build step to run correctly while standard preconditions work just fine.
+          Using the generic versions of Contract.Requires without rewriting your IL from CCRewrite will cause problems like in this
+          <a href="http://stackoverflow.com/questions/19365702/why-has-my-webapi-rest-method-broken-over-the-weekend">example</a>.
         </p>
       </dd>
     </dl>
@@ -265,12 +271,15 @@
     Value = value;
   }
 }</pre>
-        Using Contract.Requires in these situations with my build configuration allows
-        these checks to be omitted in Release builds.
-        When combined with comprehensive tests and the Code Contracts static analysis tool
-        this can improve performance without sacrificing safety.
       </div>
     </div>
+    
+    <p>
+      Using Contract.Requires in these situations with my build configuration allows
+      these redundant checks to be omitted in Release builds.
+      When combined with comprehensive tests and the Code Contracts static analysis tool
+      this technique can increase safety with little or no performance penalty.
+    </p>
     <h3>Postconditions</h3>
 
     <p>
@@ -346,6 +355,8 @@
       Acting as something like both a Contract.Require and Contract.Ensures for each method an invariant helps to reduce the number of contracts that must be written.
       In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object which can even reduce code.
     </p>
+    
+    <div class="todo">examples</div>
 
     <h3>All Together Now</h3>
     <div class="todo">A simpler example would be better</div>
@@ -435,7 +446,7 @@ public class FictionalCreature {
     </p>
     <div class="row">
       <div class="col-md-6">
-        Method example:
+        <h4>Method Example</h4>
         <pre class="brush: csharp">
 [Pure]
 public double GetDistance(Point p){
@@ -453,7 +464,7 @@ private void DoSomething(Point a, Point b){
 </pre>
       </div>
       <div class="col-md-6">
-        Property examples:
+        <h4>Property Examples</h4>
         <pre class="brush: csharp">
 public string Name { [Pure] get; set; }
 
@@ -472,21 +483,106 @@ private void DoSomething(){
       </div>
     </div>
     
-
     <h2>Static Analysis</h2>
     <p>
       The static analysis tool is where I see the largest benefit from Code Contracts.
-      Having assertions fire due to contract violations is nice but what I really want is to avoid the violation in the first place.
-      The static analysis tools are capable of analyzing the contracts as well as the code to determine if contracts may be violated.
+      It is capable of analyzing the contracts as well as the code to determine if contracts are violated or if new contracts may be needed.
+      As a result I can see errors and corner cases in my code that I may not have considered or had missed in my tests.
     </p>
     
-    <div class="todo">Add examples of violated contracts and their fixes.</div>
+    <div class="todo">elaborate</div>
+    
+    <h4>Basic Example</h4>
+    
+    <p>
+      In the following example Code Contracts knows that I am in danger of throwing an <code>IndexOutOfRangeException</code>
+      because of the access to <code>builder[a]</code> and <code>builder[b]</code>.
+      There are no bounds placed on <code>a</code> or <code>b</code> so they could be anything which causes the tool to issue a warning.
+      I am also given suggestions of other contracts that could be added to improve the safety of this code and
+      also get pruple underlines within Visual Studio for <code>builder[a]</code> and <code>builder[b]</code>.
+    </p>
+
+    <pre class="brush: csharp">
+static void Main(string[] args) {
+  Console.WriteLine(SwapLetters("ttxe", 1, 4));
+}
+
+// message : CodeContracts: Suggested requires: Contract.Requires(text != null);
+// message : CodeContracts: Suggested requires: Contract.Requires(0 &lt;= a);
+// message : CodeContracts: Suggested requires: Contract.Requires(0 &lt;= b);
+static string SwapLetters(string text, int a, int b) {
+  var builder = new StringBuilder(text, text.Length);
+  var c = builder[a]; // warning : CodeContracts: requires unproven: index &lt; this.Length
+  builder[a] = builder[b]; // warning : CodeContracts: requires unproven: index &lt; this.Length
+  builder[b] = c;
+  return builder.ToString();
+}
+</pre>
+    
+    <p>
+      After adding contracts to the method the tool is able to find flaws in my program as shown below.
+      The value passed to the <code>b</code> parameter of the <code>SwapLetters</code> method is not less than the length of the <code>text</code> parameter.
+      Within Visual Studio I can see a purple underline on the statement (<code>Console.WriteLine(SwapLetters("ttxe", 1, 4));</code>) that will cause the error,
+      there are entries in the Error List window and some items in the Build Output window.
+      The error can be fixed by changing the <code>b</code> parameter value of <code>4</code> to <code>3</code>.
+    </p>
+    
+    <pre class="brush: csharp">
+// warning : CodeContracts: Invoking method 'Main' will always lead to an error.
+// If this is wanted, consider adding Contract.Requires(false) to document it
+static void Main(string[] args) {
+  // warning : CodeContracts: requires is false: b &gt;= 0 && b &lt; text.Length
+  Console.WriteLine(SwapLetters("ttxe", 1, 4));
+}
+
+static string SwapLetters(string text, int a, int b) {
+  Contract.Requires(text != null);
+  Contract.Requires(a &gt;= 0 && a &lt; text.Length);
+  Contract.Requires(b &gt;= 0 && b &lt; text.Length);
+  var builder = new StringBuilder(text, text.Length);
+  var c = builder[a];
+  builder[a] = builder[b];
+  builder[b] = c;
+  return builder.ToString();
+}
+</pre>
+    
+    <h4>Ensures Contract Violation Example</h4>
+    <p>
+      In the following example the ensures contract is not proven to be correct.
+      The tool shows that the <code>return null;</code> will violate the post-condition.
+      We are also given a suggestion to require that <code>items.Length != 0</code>
+      but we could also remove or change the ensures to fix the problem.
+    </p>
+    <p>
+      Note that this example is simple enough that the error is detected at compile time but it
+      would certainly cause a contract violation at run-time when provided an empty input.
+    </p>
+    
+    <pre class="brush: csharp">
+static string FindLongest(string[] items) {
+  Contract.Requires(items != null);
+  // message : CodeContracts: Suggested requires: Contract.Requires(items.Length != 0);
+  Contract.Requires(Contract.ForAll(items, i =&gt; i != null));
+  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+  if (items.Length == 0)
+    return null; // warning : CodeContracts: ensures is false: Contract.Result&lt;string&gt;() != null
+  var largest = items[0];
+  for (int i = 1; i &lt; items.Length; i++)
+    if (items[i].Length &gt; largest.Length)
+      largest = items[i];
+  return largest;
+}
+</pre>
 
     <h2>Assume and Assert</h2>
     <p>
       Sometimes the static analysis tools can't figure something out or just don't have enough information.
       In these situations we can provide hints to the tools about the state of our software.
+      I run into this most often when there is very complicated flow control or when using APIs that don't provide contracts.
     </p>
+    
+    <div class="todo">Describe the difference and show assume examples.</div>
 
     <h2>Conditional Contracts</h2>
     <p>
@@ -545,7 +641,6 @@ private void DoSomething(){
       </div>
       
     </div>
-
 
     <h3>Using Other Contracts</h3>
     <p>
