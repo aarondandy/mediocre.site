@@ -9,6 +9,9 @@ namespace CCSnippets
     {
 
         static void Main(string[] args) {
+            Contract.Assume(true);
+            Contract.Assert(true);
+
             Console.WriteLine(FindLongest(new []{"one","two","three"}));
             Console.WriteLine(FindLongest(new string[0]));
             Console.ReadKey();

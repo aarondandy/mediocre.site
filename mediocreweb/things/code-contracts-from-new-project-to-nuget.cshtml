@@ -577,13 +577,61 @@ static string FindLongest(string[] items) {
 
     <h2>Assume and Assert</h2>
     <p>
-      Sometimes the static analysis tools can't figure something out or just don't have enough information.
-      In these situations we can provide hints to the tools about the state of our software.
-      I run into this most often when there is very complicated flow control or when using APIs that don't provide contracts.
+      Sometimes the static analysis tool can't figure something out or just doesn't have enough information.
+      By using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.assert(v=vs.110).aspx">Contract.Assert</a>
+      and <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.assume(v=vs.110).aspx">Contract.Assume</a>
+      conditions can be declared to be true at specific points within a method body.
+      This can be handy when Code Contracts can't follow your logic or when an API you use does not have contracts.
+      Assume and Assert seem to have more similarities than differences as
+      they both cause your program to come crashing down if an expression evaluates to false at run-time
+      and they also both are not emitted in release builds.
+      The important difference however is that <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.assume(v=vs.110).aspx">Contract.Assume</a>
+      will also provide the information to the static analysis tool.
+    </p>
+    <p>
+      When I need to verify program state or my assumptions within a method body I tend to favor the good old fashioned <code>if</code> statement over Assume or Assert.
+      If I am really worried about a condition not holding I want to also verify that it is checked <strong>and handled</strong> in my release builds and through tests.
+      I can't think of a better way than to just make that check a part of my program.
+      Often I can even use the pre-conditions of other methods to enforce those checks and to better utilize the static analysis tool.
+      Sometimes though I do need to give the tools a bit of help and Contract.<strong>Assume</strong> works great for that.
+      Because of the differences between them and because of my aversion to Contract.Assert (I prefer <code>if</code>) I see no reason to ever use Contract.Assert in my code.
+      Find what works for you but this approach has worked well for me.
+      Either way you go though be sure that any calls to Assume or Assert have high test coverage.
     </p>
     
-    <div class="todo">Describe the difference and show assume examples.</div>
-
+    <h3>Assume Example</h3>
+    <p>
+      In this example the static analysis tool is not able to predict the size of the string.
+    </p>
+    <pre class="brush: csharp">
+static string Multiply(string s, int n) {
+  Contract.Requires(n &gt;= 0);
+  Contract.Requires(s != null);
+  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+  Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+  var builder = new StringBuilder(s, s.Length * n);
+  for (int i = 1; i &lt; n; i++)
+      builder.Append(s);
+  // CodeContracts: ensures unproven: Contract.Result&lt;string&gt;().Length == s.Length * n
+  return builder.ToString();
+}
+</pre>
+    <p>
+      By using Contract.Assume we can tell the tool what we are certain is true.
+    </p>
+        <pre class="brush: csharp">
+static string Multiply(string s, int n) {
+  Contract.Requires(n &gt;= 0);
+  Contract.Requires(s != null);
+  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+  Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+  var builder = new StringBuilder(s, s.Length * n);
+  for (int i = 1; i &lt; n; i++)
+      builder.Append(s);
+  Contract.Assume(builder.ToString().Length == s.Length * n); // fix
+  return builder.ToString();
+}
+</pre>
     <h2>Conditional Contracts</h2>
     <p>
       
