@@ -634,7 +634,84 @@ static string Multiply(string s, int n) {
 </pre>
     <h2>Conditional Contracts</h2>
     <p>
-      
+      Most contracts are written as facts that must always hold as pre-conditions, post-conditions, or invariants but sometimes flexibility is needed.
+      Sometimes you need the flexibility to say that a contract is only expected to hold in specific situations.
+      Sadly there is no direct way to do this with Code Contracts but there are of course ways around it.
+    </p>
+    <pre class="brush: csharp">
+public static Response Request(string search) {
+    if (!String.IsNullOrWhiteSpace(search)) {
+        Func&lt;string, bool&gt; test =
+            new Regex(search, RegexOptions.IgnoreCase).IsMatch;
+        var foodsFound = FoodList.Where(test).ToArray();
+        if (foodsFound.Length != 0)
+            return new Response {Foods = foodsFound, Success = true};
+    }
+    return new Response { Success = false };
+}
+
+static void Main(string[] args) {
+    var response = Request("e");
+    if (response.Success) {
+        Console.WriteLine(String.Join(
+            Environment.NewLine,
+            response.Foods // warning : CodeContracts: requires unproven: value != null
+        ));
+    }
+    Console.ReadKey();
+}
+</pre>
+    <p>
+      In the above example the request method creates a response with an array of foods only when results are found
+      and also marks the success flag as true in that situation.
+      In the Main method we make use of the foods array when the success flag is true
+      but the static analysis tools don't have any way to know that the foods array is not null.
+      To satisfy the pre-condition on String.Join we need a way to ensure that the result of Request gives us a non-null
+      food list when success is true.
+      Because there is no conditional mechanism built into Code Contracts some simple tricks are needed
+      as shown below.
+    </p>
+    
+    <div>Note: The names for these styles are totally made up.</div>
+
+    <h3>Ternary Contracts</h3>
+    <p>
+      The simplest way to write a conditional contract is with a <a href="http://msdn.microsoft.com/en-us/library/ty67wk28.aspx">ternary operator</a>.
+      The basic form is <code>condition ? contract : true</code>.
+      If a condition is satisfied then the contract must hold, otherwise nobody cares. Example:
+      <code>Contract.Ensures(Contract.Result&lt;Response&gt;().Success ? Contract.Result&lt;Response&gt;().Foods != null : true);</code> .
+    </p>
+
+    <table class="table">
+      <thead>
+        <tr>
+          <th>if</th><td>?</td><th>then</th><td>:</td><th>else</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>contract condition</td><td>?</td><td>contract</td><td>:</td><td>bypass</td></tr>
+        <tr><td><code>Contract.Result&lt;Response&gt;().Success</code></td><td>?</td><td><code>Contract.Result&lt;Response&gt;().Foods != null</code></td><td>:</td><td><code>true</code></td></tr>
+      </tbody>
+    </table>
+    
+    <h3>State an Impossibility</h3>
+    <p>
+      While the above format works it is a little long and some people are deeply offended by ternary expressions.
+      Also having a <code>true</code> or <code>false</code> keyword in a conditional has a bit of a smell to it.
+      Another way to write a conditional contract is to invert it a bit and instead state something that can never happen.
+      This form looks like: <code>!( condition &amp;&amp; !(contract) )</code> .
+      Instead of stating that under a condition a contract must hold
+      this style states that it is impossible for that contract to be false when the condition is satisfied.
+      It is not possible for foods to be null when success is true, example:
+      <code>Contract.Ensures(!(Contract.Result&lt;Response&gt;().Success && Contract.Result&lt;Response&gt;().Foods == null));</code> .
+    </p>
+    
+    <h3>This or That</h3>
+    <p>
+      The above is a bit better but the double negatives and nesting can get confusing.
+      An even simpler form looks like this: <code>!(condition) || contract</code>.
+      The condition is not satisfied or the contract must be true, example:
+      <code>Contract.Ensures(!Contract.Result&lt;Response&gt;().Success || Contract.Result&lt;Response&gt;().Foods != null);</code> .
     </p>
 
     <h2>Inheritance</h2>

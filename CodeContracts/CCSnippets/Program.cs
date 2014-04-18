@@ -2,25 +2,51 @@
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace CCSnippets
 {
     class Program
     {
 
-        static void Main(string[] args) {
-            Contract.Assume(true);
-            Contract.Assert(true);
+        private static readonly string[] FoodList = new [] {
+            "apple", "bread", "duck", "goat milk", "jelly",
+            "kale", "lamb", "orange", "radish", "salmon"};
 
-            Console.WriteLine(FindLongest(new []{"one","two","three"}));
-            Console.WriteLine(FindLongest(new string[0]));
+        public class Response {
+            public bool Success { get; set; }
+            public string[] Foods { get; set; }
+        }
+
+        public static Response Request(string search) {
+            //Contract.Ensures(!(Contract.Result<Response>().Success && Contract.Result<Response>().Foods == null));
+            Contract.Ensures(!Contract.Result<Response>().Success || Contract.Result<Response>().Foods != null);
+            Contract.Ensures(Contract.Result<Response>().Success ? Contract.Result<Response>().Foods != null : true);
+            if (!String.IsNullOrWhiteSpace(search)) {
+                Func<string, bool> test =
+                    new Regex(search, RegexOptions.IgnoreCase).IsMatch;
+                var foodsFound = FoodList.Where(test).ToArray();
+                if (foodsFound.Length != 0)
+                    return new Response {Foods = foodsFound, Success = true};
+            }
+            return new Response { Success = false };
+        }
+
+        static void Main(string[] args) {
+            var response = Request("e");
+            if (response.Success) {
+                Console.WriteLine(String.Join(
+                    Environment.NewLine,
+                    response.Foods // warning : CodeContracts: requires unproven: value != null
+                ));
+            }
             Console.ReadKey();
         }
 
         static string FindLongest(string[] items) {
             Contract.Requires(items != null);
             Contract.Requires(Contract.ForAll(items, i => i != null));
-            //Contract.Ensures(Contract.Result<string>() != null);
+            //Contract.Ensures(Contract.Response<string>() != null);
             if (items.Length == 0)
                 return null;
             var largest = items[0];
