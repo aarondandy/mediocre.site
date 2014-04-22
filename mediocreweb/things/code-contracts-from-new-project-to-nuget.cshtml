@@ -678,9 +678,16 @@ static void Main(string[] args) {
     <p>
       The simplest way to write a conditional contract is with a <a href="http://msdn.microsoft.com/en-us/library/ty67wk28.aspx">ternary operator</a>.
       The basic form is <code>condition ? contract : true</code>.
-      If a condition is satisfied then the contract must hold, otherwise nobody cares. Example:
-      <code>Contract.Ensures(Contract.Result&lt;Response&gt;().Success ? Contract.Result&lt;Response&gt;().Foods != null : true);</code> .
+      If a condition is satisfied then the contract must hold, otherwise nobody cares.
     </p>
+    
+    <pre class="brush: csharp">
+Contract.Ensures(
+    Contract.Result&lt;Response&gt;().Success
+    ? Contract.Result&lt;Response&gt;().Foods != null
+    : true
+);
+</pre>
 
     <table class="table">
       <thead>
@@ -702,34 +709,48 @@ static void Main(string[] args) {
       This form looks like: <code>!( condition &amp;&amp; !(contract) )</code> .
       Instead of stating that under a condition a contract must hold
       this style states that it is impossible for that contract to be false when the condition is satisfied.
-      It is not possible for foods to be null when success is true, example:
-      <code>Contract.Ensures(!(Contract.Result&lt;Response&gt;().Success && Contract.Result&lt;Response&gt;().Foods == null));</code> .
+      It is not possible for foods to be null when success is true.
     </p>
+    <pre class="brush: csharp">
+Contract.Ensures(
+    !(
+        Contract.Result&lt;Response&gt;().Success
+        && Contract.Result&lt;Response&gt;().Foods == null
+    )
+);
+</pre>
     
     <h3>This or That</h3>
     <p>
       The above is a bit better but the double negatives and nesting can get confusing.
       An even simpler form looks like this: <code>!(condition) || contract</code>.
-      The condition is not satisfied or the contract must be true, example:
-      <code>Contract.Ensures(!Contract.Result&lt;Response&gt;().Success || Contract.Result&lt;Response&gt;().Foods != null);</code> .
+      The condition is not satisfied or the contract must be true.
     </p>
+    <pre class="brush: csharp">
+Contract.Ensures(
+    !Contract.Result&lt;Response&gt;().Success
+    || Contract.Result&lt;Response&gt;().Foods != null
+);
+</pre>
 
     <h2>Inheritance</h2>
-    <p>
-      
+    <p class="todo">
+      todo
     </p>
 
     <h2>Distribution</h2>
     <p>
-      When an assembly uses code contracts and is built with the Contract Reference Assembly option set to Build as in my Release and DebugCC configurations
-      a second assembly is produced that has contract information within it.
-      The contract information will be embedded within this rewritten contract assembly even if you disable the Runtime Checking as in my Release configuration.
-      Having this second assembly allows you to distribute your contracts and consume those made by others even if the referenced assembly
-      is built without contract information as in my Release builds.
+      When an assembly has contracts and is built with the Contract Reference Assembly option set to Build a second assembly is produced as a part of the build.
+      This extra assembly is written to <code>./CodeContracts/{assembly name}.Contracts.dll</code> within the output directory
+      and contains Code Contract information, even in builds with Runtime Checking disabled.
+      This feature allows the contract information to be used by other projects,
+      even when the referenced assemblies have not been rewritten with the Code Contracts tool.
     </p>
     
     <div class="well">
-    <p>Using my configurations your output directories will look similar to the following:</p>
+      
+      <p>Using my configurations your output directories will look similar to the following:</p>
+
       <div class="media">
         <span class="glyphicon glyphicon-folder-open pull-left"></span>
         <div class="media-body">
@@ -767,19 +788,74 @@ static void Main(string[] args) {
       
     </div>
 
-    <h3>Using Other Contracts</h3>
     <p>
-      
+      When an assembly is referenced by a project using Code Contracts the tools are able to locate the contract assemblies
+      by searching for <code>./CodeContracts/{assembly name}.Contracts.dll</code> relative to the referenced assembly.
+      This allows contracts to be easily consumed by other projects when referenced as a binary reference, project reference
+      and even as a NuGet package reference.
+      Code Contracts also comes with contract reference assemblies for the .NET framework which can be found in
+      <code>{Program Files}\Microsoft\Contracts\Contracts</code> .
+    </p>
+    
+    <h3>Documentation</h3>
+    <p>
+      When the "Emit contracts into XML doc file" option is enabled the Code Contract tools will augment the generated XML
+      for members and types with a few additional tags. The extra XML doc tags match their respective contract methods:
+    </p>
+    <ul>
+      <li>requires</li>
+      <li>ensures</li>
+      <li>ensuresOnThrow</li>
+      <li>invariant</li>
+    </ul>
+    <p>
+      All four tags will contain the contract within their body as text, obviously each having a different context.
+      When dealing with standard preconditions, the condition body may require some cleanup or simplification.
+      Additionally the <code>requires</code> and <code>ensuresOnThrow</code> tags may also have an exception attribute with a <a href="http://msdn.microsoft.com/en-us/library/fsbx0t7x.aspx">code reference</a> to the related exception.
+      Finally there is the simple <code>pure</code> tag that will mark a method as pure.
     </p>
 
     <h3>NuGet</h3>
     <p>
-      
+      Releasing contract reference assemblies along with your library in a NuGet package is not difficult but there are a few extra steps to keep in mind.
+      When you manually create a nuspec file, all DLL files within are referenced when adding a package to your project.
+      Use the <code>&lt;references&gt;</code> tag to override this default behavior and explicitly specify the assemblies to reference.
+      You must also add the contract reference assemblies to the correct target folder within the NuGet package.
+      See the following for an example nuspec file:
     </p>
+    <pre class="brush:xml">
+&lt;?xml version="1.0"?&gt;
+&lt;package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"&gt;
+  &lt;metadata&gt;
+    &lt;id&gt;MyAssembly&lt;/id&gt;
+    &lt;version&gt;1.2.3&lt;/version&gt;
+    &lt;title&gt;My Assembly&lt;/title&gt;
+    &lt;authors&gt;human&lt;/authors&gt;
+    &lt;description&gt;Mediocre library.&lt;/description&gt;
+    &lt;requireLicenseAcceptance&gt;false&lt;/requireLicenseAcceptance&gt;
+    &lt;tags&gt;technology&lt;/tags&gt;
+    &lt;projectUrl&gt;http://mediocresoft.com/&lt;/projectUrl&gt;
+    &lt;references&gt;
+      &lt;reference file="MyAssembly.dll" /&gt;
+    &lt;/references&gt;
+  &lt;/metadata&gt;
+  &lt;files&gt;
+    &lt;file src=".\bin\Release\MyAssembly.dll" target="lib\net40-client" /&gt;
+    &lt;file src=".\bin\Release\MyAssembly.XML" target="lib\net40-client" /&gt;
+    &lt;file
+      src=".\bin\Release\CodeContracts\MyAssembly.Contracts.dll"
+      target="lib\net40-client\CodeContracts" /&gt;
+
+    &lt;!-- for symbol packages --&gt;
+    &lt;file src=".\bin\Release\MyAssembly.pdb" target="lib\net40-client" /&gt;
+    &lt;file src=".\src\MyAssembly\**.cs" target="src" /&gt;
+  &lt;/files&gt;
+&lt;/package&gt;
+</pre>
     
     <h3>Signing</h3>
-    <p>
-      
+    <p class="todo">
+      don't
     </p>
 
     <h2>Final Thoughts</h2>
