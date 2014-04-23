@@ -550,7 +550,7 @@ static string SwapLetters(string text, int a, int b) {
     <h4>Ensures Contract Violation Example</h4>
     <p>
       In the following example the ensures contract is not proven to be correct.
-      The tool shows that the <code>return null;</code> will violate the post-condition.
+      The tool shows that the <code>return null;</code> will violate the postcondition.
       We are also given a suggestion to require that <code>items.Length != 0</code>
       but we could also remove or change the ensures to fix the problem.
     </p>
@@ -592,7 +592,7 @@ static string FindLongest(string[] items) {
       When I need to verify program state or my assumptions within a method body I tend to favor the good old fashioned <code>if</code> statement over Assume or Assert.
       If I am really worried about a condition not holding I want to also verify that it is checked <strong>and handled</strong> in my release builds and through tests.
       I can't think of a better way than to just make that check a part of my program.
-      Often I can even use the pre-conditions of other methods to enforce those checks and to better utilize the static analysis tool.
+      Often I can even use the preconditions of other methods to enforce those checks and to better utilize the static analysis tool.
       Sometimes though I do need to give the tools a bit of help and Contract.<strong>Assume</strong> works great for that.
       Because of the differences between them and because of my aversion to Contract.Assert (I prefer <code>if</code>) I see no reason to ever use Contract.Assert in my code.
       Find what works for you but this approach has worked well for me.
@@ -634,7 +634,7 @@ static string Multiply(string s, int n) {
 </pre>
     <h2>Conditional Contracts</h2>
     <p>
-      Most contracts are written as facts that must always hold as pre-conditions, post-conditions, or invariants but sometimes flexibility is needed.
+      Most contracts are written as facts that must always hold as preconditions, postconditions, or invariants but sometimes flexibility is needed.
       Sometimes you need the flexibility to say that a contract is only expected to hold in specific situations.
       Sadly there is no direct way to do this with Code Contracts but there are of course ways around it.
     </p>
@@ -666,7 +666,7 @@ static void Main(string[] args) {
       and also marks the success flag as true in that situation.
       In the Main method we make use of the foods array when the success flag is true
       but the static analysis tools don't have any way to know that the foods array is not null.
-      To satisfy the pre-condition on String.Join we need a way to ensure that the result of Request gives us a non-null
+      To satisfy the precondition on String.Join we need a way to ensure that the result of Request gives us a non-null
       food list when success is true.
       Because there is no conditional mechanism built into Code Contracts some simple tricks are needed
       as shown below.
@@ -734,9 +734,28 @@ Contract.Ensures(
 </pre>
 
     <h2>Inheritance</h2>
-    <p class="todo">
-      todo
+    <p>
+      As you use Code Contracts you may find a need to apply contracts to situations involving inheritance, interfaces and abstract classes.
+      The framework and tools provide ways of accomplishing this but I have read some pretty negative opinions about it.
+      While I don't disagree with some of those observations I still think the inheritance features are worth using.
     </p>
+    
+    <h3>Basic Rules for Inheritance</h3>
+    <p class="todo">
+      
+      NOTE: bugs!<br/>
+
+      The rules for how preconditions and postconditions are inherited are different.
+      Postconditions mostly work how you may expect.
+      You can define postconditions for the base method and inheriting implementations may add extra postconditions.
+      So long as there are no conflicts in the logic there should be no surprises.
+    </p>
+    <pre class="brush: csharp">
+
+</pre>
+    
+    <h3>Contracts Without Bodies</h3>
+    <div class="todo">todo</div>
 
     <h2>Distribution</h2>
     <p>
