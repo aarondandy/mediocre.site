@@ -741,18 +741,30 @@ Contract.Ensures(
     </p>
     
     <h3>Basic Rules for Inheritance</h3>
-    <p class="todo">
-      
-      NOTE: bugs!<br/>
-
+    <p>
       The rules for how preconditions and postconditions are inherited are different.
-      Postconditions mostly work how you may expect.
-      You can define postconditions for the base method and inheriting implementations may add extra postconditions.
-      So long as there are no conflicts in the logic there should be no surprises.
+      Preconditions may take you by surprise in that they can only appear in base or root implementations of methods.
+      Methods that inherit from that base may not add new preconditions and can not remove preconditions.
+      There are logical reasons for why preconditions may not be added and there are technical reasons for why they can not be removed.
+      The documentation states pretty clearly that preconditions can not be removed because they said so.
+      To understand why they may not be added lets go over an example.
     </p>
-    <pre class="brush: csharp">
-
-</pre>
+    <p>
+      If you were to say mammals can eat anything that is delicious you are setting yourself up for a problem.
+      When you implement <code>public class Dog : Mammal</code> you should be placing a restriction against eating chocolate (<code>Contract.Requires(food != "chocolate");</code>).
+      While that makes sense from the perspective of the Dog type it will cause problems when the Dog is treated as a mammal.
+      When a user tries to feed chocolate to a list of mammals they may get a surprising exception if the list contains a dog,
+      and nobody likes surprises. Read about the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov substitution principle</a> for a more formal description.
+      I recommend you not put preconditions on a base method unless you really think it through.
+    </p>
+    <p>
+      Postconditions mostly work how you may expect (when they do).
+      You can define postconditions for the base method and inheriting implementations may add extra postconditions.
+      So long as there are no conflicts in the logic it should work
+      <strong>but</strong> as of April 2014 the additional postconditions only seem to have an effect within the derived class.
+      You could ensure that all instances of <code>class Mammal</code> poop and add that <code>class Whale : Mammal</code> has huge poops.
+      When dealing with mammals you know there will be a mess to dispose of and when dealing with whales the mess will be large.
+    </p>
     
     <h3>Contracts Without Bodies</h3>
     <div class="todo">todo</div>
