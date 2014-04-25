@@ -40,6 +40,11 @@
 
     <div class="todo">TODO: more DBC explanations</div>
     <div class="todo">TODO: examples</div>
+    
+    <h3>When Not to Use Code Contracts</h3>
+    <p class="todo">
+      todo
+    </p>
 
     <h2>Getting Started</h2>
     <h3>What You Need</h3>
@@ -767,7 +772,101 @@ Contract.Ensures(
     </p>
     
     <h3>Contracts Without Bodies</h3>
-    <div class="todo">todo</div>
+    <p>
+      While contracts must be declared within method bodies it is still possible to create contracts for abstract methods and interfaces.
+      Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractclassattribute(v=vs.110).aspx">ContractClass</a> attribute
+      and the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractclassforattribute(v=vs.110).aspx">ContractClassFor</a>
+      it is possible to define another type that will host the contracts for you.
+      To define contracts for an abstract method, abstract property, or an interface create a new abstract class that will hold the contracts.
+      I like to use the <code>internal</code> access modifier and I name the type by adding the word "Contracts" to it.
+      Apply the <code>ContractClassFor</code> attribute to the type that will host the contracts and apply the <code>ContractClass</code> attribute to the target type.
+      Each attribute takes a parameter that references the other type.
+      Don't worry about forgetting an attribute or referencing the wrong type though as any mistake will cause an error at compile time.
+    </p>
+    <pre class="brush: csharp">
+[ContractClass(typeof(NoiseMakerContracts))]
+public abstract class NoiseMaker {
+    public string LoudNoise() {
+        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        return Noise().ToUpper();
+    }
+    public abstract string Noise();
+}
+
+[ContractClassFor(typeof(NoiseMaker))]
+internal abstract class NoiseMakerContracts : NoiseMaker {
+    public override string Noise() {
+        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        throw new NotImplementedException();
+    }
+}
+
+public class Screech : NoiseMaker{
+    public override string Noise() {
+        return "screeeeeeeech";
+    }
+}
+
+public class Nope : NoiseMaker {
+    public override string Noise() {
+        return null; // ensures is false: Contract.Result&lt;string&gt;() != null
+    }
+}
+</pre>
+    <p>
+      It get a little trickier when the inheritance gets deeper though.
+      An abstract contract type must still at least specify all the method signatures of any base types and interfaces it inherits from,
+      even if you don't need to add contracts to them.
+      This causes some problems though because you may not declare preconditions in methods derived from a base that already declares them.
+      Thankfully the solution to this problem is pretty simple.
+      For methods you don't want to apply contracts to, use <code>abstract override</code> when inheriting from an abstract base and <code>abstract</code> when implementing interfaces.
+    </p>
+    <pre class="brush: csharp">
+[ContractClass(typeof(SomeInterfaceContracts))]
+public interface ISomeInterface {
+    string TopValue(int n);
+}
+
+[ContractClassFor(typeof(ISomeInterface))]
+internal abstract class SomeInterfaceContracts : ISomeInterface {
+    public string TopValue(int n) {
+        Contract.Requires(n &gt;= 0);
+        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        throw new NotImplementedException();
+    }
+}
+
+[ContractClass(typeof(ExtraStuffContracts))]
+public interface IExtraStuff : ISomeInterface {
+    int GetNumber();
+}
+
+[ContractClassFor(typeof(IExtraStuff))]
+internal abstract class ExtraStuffContracts : IExtraStuff {
+    public int GetNumber() {
+        Contract.Ensures(Contract.Result&lt;int&gt;() &gt;= 0);
+        throw new NotImplementedException();
+    }
+    public abstract string TopValue(int n);
+}
+      
+[ContractClass(typeof(SomeBaseContracts))]
+public abstract class SomeBase {
+    public abstract string ImportantStuff(string input);
+    public abstract string NobodyCares();
+}
+
+[ContractClassFor(typeof(SomeBase))]
+internal abstract class SomeBaseContracts : SomeBase {
+    public override string ImportantStuff(string input) {
+        Contract.Requires(input != null);
+        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        throw new NotImplementedException();
+    }
+    public abstract override string NobodyCares();
+}
+</pre>
+
 
     <h2>Distribution</h2>
     <p>
@@ -889,10 +988,6 @@ Contract.Ensures(
       don't
     </p>
 
-    <h2>Final Thoughts</h2>
-    <p>
-      
-    </p>
 
   </div>
 </div>
