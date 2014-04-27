@@ -590,8 +590,8 @@ static string FindLongest(string[] items) {
       Assume and Assert seem to have more similarities than differences as
       they both cause your program to come crashing down if an expression evaluates to false at run-time
       and they also both are not emitted in release builds.
-      The important difference however is that <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.assume(v=vs.110).aspx">Contract.Assume</a>
-      will also provide the information to the static analysis tool.
+      The important difference however is that Contract.Assume will provide information to the static analysis tool
+      while Contract.Assert will cause Code Contracts to check the asserted condition.
     </p>
     <p>
       When I need to verify program state or my assumptions within a method body I tend to favor the good old fashioned <code>if</code> statement over Assume or Assert.
