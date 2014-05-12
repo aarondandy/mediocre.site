@@ -30,32 +30,48 @@
     <h2 id="cc-intro">Introduction</h2>
 
     <p>
+      It can be very difficult to trust code written by others and especially myself.
+      I write tests because I know I will make mistakes and I expect my colleagues to do the same.
+      Tests and {insert-letter-here}DD approaches go a long way to ensure that code is correct
+      but I don't think they are the one true path to salvation.
+      I still find flaws in tested code when I accidentally trip over corner cases.
+    </p>
+    
+    <pre class="brush: csharp">
+string text = "hello";
+int num = 20;
+int selection = 11;
+char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
+</pre>
+
+    <p>
+      Consider the above contrived example.
+      I could make all kinds of tests pass for this code but I still have a bad feeling about it.
+      Aside from it being terrible code there are so many opportunities for null reference and index out of range exceptions.
+      I can't tell from looking at this code the relationships and restrictions for the parameters, variables and results.
+      In these situations it can be hard to find all of the corner cases to test for or even honest mistakes that have been overlooked.
+    </p>
+
+    <p>
       Code Contracts is Microsoft's implementation of <a href="https://en.wikipedia.org/wiki/Design_by_contract">Design by Contract</a>
       for VB and C#. Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts(v=vs.110).aspx">System.Diagnostics.Contracts Namespace</a>
       included with .NET 4.0 and the <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
       define the behavior of your software and verify it at compile time as well as run time.
-      I don't see Code Contracts as yet another test framework and I don't see Design by Contract as a replancement for testing.
-      For me Code Contracts helps to set boundaries, compartmentalize problems, and better focus on writing meaningful code by increasing trust.
-    </p>
-
-    <div class="todo">TODO: more DBC explanations</div>
-    <div class="todo">TODO: examples</div>
-    
-    <h3>When Not to Use Code Contracts</h3>
-    <p class="todo">
-      todo
+      With Code Contracts I can prove at "compile time" that the nasty example above does not throw
+      or at least define the domain in which it won't.
     </p>
 
     <h2>Getting Started</h2>
     <h3>What You Need</h3>
 
     <ul>
-      <li>Visual Studio Pro or better</li>
-      <li>.NET 4.0</li>
+      <li>Visual Studio Pro or more expensive</li>
+      <li>.NET 4.0 or newer</li>
       <li><a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a></li>
     </ul>
+    
     <div class="todo">TODO: remove or greatly simplify</div>
-    <p>
+    <p class="todo">
       You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio extension.
       There may be ways to work around that but you will have to look into that yourself.
       I have used the tools in 2010 and 2012 but no longer have access to up to date Microsoft software so I can't confirm 2013 compatibility.
@@ -944,6 +960,10 @@ internal abstract class SomeBaseContracts : SomeBase {
       Additionally the <code>requires</code> and <code>ensuresOnThrow</code> tags may also have an exception attribute with a <a href="http://msdn.microsoft.com/en-us/library/fsbx0t7x.aspx">code reference</a> to the related exception.
       Finally there is the simple <code>pure</code> tag that will mark a method as pure.
     </p>
+    
+    <p class="todo">
+      How to consume, XML example?
+    </p>
 
     <h3>NuGet</h3>
     <p>
@@ -982,12 +1002,6 @@ internal abstract class SomeBaseContracts : SomeBase {
   &lt;/files&gt;
 &lt;/package&gt;
 </pre>
-    
-    <h3>Signing</h3>
-    <p class="todo">
-      don't
-    </p>
-
 
   </div>
 </div>

@@ -3,87 +3,30 @@ using System.Diagnostics.Contracts;
 
 namespace CCSnippets
 {
+    internal class Program
+    {
+        private static void Main(string[] args) {
+            var text = "sample";
+            var someLetter = text[RandomIndices(text.Length, 20)[11]];
+            Console.Write(someLetter);
+            Console.ReadKey();
+        }
 
-class Program {
-    static void Main(string[] args) {
-        var sounder = new Screech();
-        Console.WriteLine(sounder.LoudNoise());
+        private static int[] RandomIndices(int exclusiveLimit, int count) {
+            Contract.Requires(exclusiveLimit > 0);
+            Contract.Requires(count >= 0);
+            Contract.Ensures(Contract.Result<int[]>() != null);
+            Contract.Ensures(Contract.Result<int[]>().Length == count);
+            Contract.Ensures(Contract.ForAll(Contract.Result<int[]>(), x => x >= 0));
+            Contract.Ensures(Contract.ForAll(Contract.Result<int[]>(), x => x < exclusiveLimit));
+            var randomGenerator = new Random();
+            var result = new int[count];
+            for (int i = 0; i < result.Length; i++)
+                result[i] = randomGenerator.Next(exclusiveLimit);
+
+            Contract.Assume(Contract.ForAll(result, x => x < exclusiveLimit));
+            return result;
+        }
+
     }
-}
-
-[ContractClass(typeof(NoiseMakerContracts))]
-public abstract class NoiseMaker {
-    public virtual string LoudNoise() {
-        Contract.Ensures(Contract.Result<string>() != null);
-        return Noise().ToUpper();
-    }
-    public abstract string Noise();
-}
-
-[ContractClassFor(typeof(NoiseMaker))]
-internal abstract class NoiseMakerContracts : NoiseMaker {
-    public override string Noise() {
-        Contract.Ensures(Contract.Result<string>() != null);
-        throw new NotImplementedException();
-    }
-}
-
-public class Screech : NoiseMaker{
-    public override string Noise() {
-        return "screeeeeeeech";
-    }
-}
-
-public class Nope : NoiseMaker {
-    public override string Noise() {
-        return null; // ensures is false: Contract.Result<string>() != null
-    }
-}
-
-[ContractClass(typeof(SomeBaseContracts))]
-public abstract class SomeBase {
-    public abstract string ImportantStuff(string input);
-    public abstract string NobodyCares();
-}
-
-[ContractClassFor(typeof(SomeBase))]
-internal abstract class SomeBaseContracts : SomeBase {
-    public override string ImportantStuff(string input) {
-        Contract.Requires(input != null);
-        Contract.Ensures(Contract.Result<string>() != null);
-        throw new NotImplementedException();
-    }
-    public abstract override string NobodyCares();
-}
-
-[ContractClass(typeof(SomeInterfaceContracts))]
-public interface ISomeInterface {
-    string TopValue(int n);
-}
-
-[ContractClassFor(typeof(ISomeInterface))]
-internal abstract class SomeInterfaceContracts : ISomeInterface {
-    public string TopValue(int n) {
-        Contract.Requires(n >= 0);
-        Contract.Ensures(Contract.Result<string>() != null);
-        throw new NotImplementedException();
-    }
-}
-
-[ContractClass(typeof(ExtraStuffContracts))]
-public interface IExtraStuff : ISomeInterface {
-    int GetNumber();
-}
-
-[ContractClassFor(typeof(IExtraStuff))]
-internal abstract class ExtraStuffContracts : IExtraStuff {
-    public int GetNumber() {
-        Contract.Ensures(Contract.Result<int>() >= 0);
-        return 0;
-    }
-    public abstract string TopValue(int n);
-}
-
-
-
 }
