@@ -70,13 +70,15 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
       <li><a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a></li>
     </ul>
     
-    <div class="todo">TODO: remove or greatly simplify</div>
-    <p class="todo">
-      You can't install the tools in an Express Edition of Visual Studio because it includes a Visual Studio extension.
-      There may be ways to work around that but you will have to look into that yourself.
-      I have used the tools in 2010 and 2012 but no longer have access to up to date Microsoft software so I can't confirm 2013 compatibility.
-      Be aware though that this only applies to the tooling. The Contracts namespace is part of .NET 4.0 so if you use it as I do
-      you shouldn't be left with a code base that won't compile/run if you have to downgrade to express.
+    <p>
+      While the Code Contracts tools are free they may not be installed in Express Editions of Visual Studio.
+      Also because the interface for Code Contracts is within the .NET Framework 4.0,
+      you must be able to code against at least .NET 4 .
+      So far I have only used the tools with Visual Studio 2010 and 2012 but from reading the forums
+      it sounds like 2013 works too.
+      With all that said you don't need to feel bound to a paid version of Visual Studio forever.
+      If in the future you can't afford the next paid version of Visual Studio you will likely
+      lose access to the Code Contracts tooling but your code will still compile, provided you follow my advice.
     </p>
 
     <h3>Build Configurations</h3>
@@ -199,6 +201,36 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
 
     <h3>Method Anatomy with Code Contracts</h3>
     <div class="todo">Image of method anatomy and maybe a link to the documentation?</div>
+    
+    <pre class="brush: csharp">
+//  * signature
+public static StringBuilder FluentDouble(this StringBuilder sb) {
+    //  * preconditions
+
+    //    * standard preconditions
+    if (sb == null)
+        throw new ArgumentNullException("sb");
+
+    //    * Contract.Requires
+    Contract.Requires(sb.Length > 0);
+
+    //  * postconditions
+
+    //    * normal termination postconditions
+    Contract.Ensures(
+        Contract.Result&lt;StringBuilder&gt;().Length == Contract.OldValue(sb.Length) * 2);
+
+    //    * exception postconditions
+    Contract.EnsuresOnThrow&lt;InvalidOperationException&gt;(
+        sb.Length == Contract.OldValue(sb.Length));
+
+    //  * contract block terminator
+    Contract.EndContractBlock();
+      
+    //  * method body
+    return sb.Append(sb.ToString());
+}
+</pre>
 
     <h3>Preconditions</h3>
     <div class="todo">Rewrite this</div>
