@@ -47,7 +47,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
     <p>
       Consider the above contrived example.
       I could make all kinds of tests pass for this code but I still have a bad feeling about it.
-      Aside from it being terrible code there are so many opportunities for null reference and index out of range exceptions.
+      Aside from it being terrible code there are so many opportunities for null and index related exceptions.
       I can't tell from looking at this code the relationships and restrictions for the parameters, variables and results.
       In these situations it can be hard to find all of the corner cases to test for or even honest mistakes that have been overlooked.
     </p>
@@ -200,37 +200,40 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
     <h2>Writing Contracts</h2>
 
     <h3>Method Anatomy with Code Contracts</h3>
-    <div class="todo">Image of method anatomy and maybe a link to the documentation?</div>
     
     <pre class="brush: csharp">
-//  * signature
-public static StringBuilder FluentDouble(this StringBuilder sb) {
-    //  * preconditions
-
-    //    * standard preconditions
-    if (sb == null)
-        throw new ArgumentNullException("sb");
-
-    //    * Contract.Requires
-    Contract.Requires(sb.Length > 0);
-
-    //  * postconditions
-
-    //    * normal termination postconditions
-    Contract.Ensures(
-        Contract.Result&lt;StringBuilder&gt;().Length == Contract.OldValue(sb.Length) * 2);
-
-    //    * exception postconditions
-    Contract.EnsuresOnThrow&lt;InvalidOperationException&gt;(
-        sb.Length == Contract.OldValue(sb.Length));
-
-    //  * contract block terminator
-    Contract.EndContractBlock();
-      
-    //  * method body
-    return sb.Append(sb.ToString());
+public StringBuilder FluentDouble(this StringBuilder sb) {
+  // all preconditions are listed before postconditions
+  // standard/legacy preconditions are first
+  if (sb == null)
+    throw new ArgumentNullException("sb");
+  // Contract.Requires calls come after standard preconditions
+  Contract.Requires(sb.Length > 0);
+  // if there are any preconditions the post conditions come after
+  // normal postconditions go first
+  Contract.Ensures(
+    Contract.Result&lt;StringBuilder&gt;().Length
+    == Contract.OldValue(sb.Length) * 2);
+  // exceptional postconditions are written after normal ones
+  Contract.EnsuresOnThrow&lt;InvalidOperationException&gt;(
+    sb.Length == Contract.OldValue(sb.Length));
+  // the actual method code is last
+  return sb.Append(sb.ToString());
 }
 </pre>
+
+    <p>
+      All contracts are written into the top part of a method body.
+      It is a bit odd to specify contracts within the method and to specify postconditions at the top of a method but that is how it is done.
+      When writing contracts, the four types (described later) must be grouped together and the groups must be in a specific order as shown in the example and diagram.
+      None of these groups are required but a call to <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.endcontractblock(v=vs.110).aspx">Contract.EndContractBlock()</a>
+      must be made last in the contract block if it contains only standard/legacy preconditions.
+    </p>
+
+    <img
+      src="@Url.Content("~/things/garbage-file/cc-assets/cc-method-anatomy.png")"
+      alt="Code Contracts method diagram. Contracts should be in the following order: Standard Preconditions, Contract.Requires, Contract.Ensures and finally Contract.EnsuresOnThrow"
+      class="img-responsive" />
 
     <h3>Preconditions</h3>
     <div class="todo">Rewrite this</div>

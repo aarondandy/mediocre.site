@@ -152,6 +152,7 @@
     <Content Include="things\garbage-file\2012-dark-for-2010-preview-thumb.jpg" />
     <Content Include="things\garbage-file\2012-dark-for-2010-preview.jpg" />
     <Content Include="things\garbage-file\blank_servicestack_metadata.png" />
+    <Content Include="things\garbage-file\cc-assets\cc-method-anatomy.png" />
     <Content Include="things\garbage-file\cc-assets\prjcfg-debug.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

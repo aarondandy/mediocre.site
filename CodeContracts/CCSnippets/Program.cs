@@ -36,22 +36,23 @@ namespace CCSnippets
 
     internal static class SbEx
     {
-        public static StringBuilder FluentDouble(this StringBuilder sb) {
-            if (sb == null)
-                throw new ArgumentNullException("sb");
 
-            Contract.Requires(sb.Length > 0);
+public static StringBuilder FluentDouble(this StringBuilder sb) {
 
-            Contract.Ensures(
-                Contract.Result<StringBuilder>().Length == Contract.OldValue(sb.Length) * 2);
+    if (sb == null) throw new ArgumentNullException("sb");
 
-            Contract.EnsuresOnThrow<InvalidOperationException>(
-                sb.Length == Contract.OldValue(sb.Length));
+    Contract.Requires(sb.Length > 0);
 
-            Contract.EndContractBlock();
+    Contract.Ensures(Contract.Result<StringBuilder>().Length == Contract.OldValue(sb.Length) * 2);
 
-            return sb.Append(sb.ToString());
-        }
+    Contract.EnsuresOnThrow<InvalidOperationException>(sb.Length == Contract.OldValue(sb.Length));
+
+    Contract.EndContractBlock();
+
+    return sb.Append(sb.ToString());
+
+}
+
     }
 
 }
