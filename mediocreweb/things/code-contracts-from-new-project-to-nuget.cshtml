@@ -195,8 +195,115 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
         </small>
       </div>
     </div>
-    <div class="todo">Link to a diff showing the changes in a csproj file</div>
+
+    <h4>MSBuild XML Example</h4>
     
+    <p>
+      Expand the following example to see the XML that is added to an MSBuild file (<code>.csproj</code>) for code contracts.
+    </p>
+
+    <div class="panel-group">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <a data-toggle="collapse" href="#msbuild-xml-example-area">
+            Expand for example.
+          </a>
+        </div>
+        <div id="msbuild-xml-example-area" class="panel-collapse collapse">
+          <div class="panel-body">
+            <pre class="brush: xml">
+&lt;PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "&gt;
+  &lt;PlatformTarget&gt;AnyCPU&lt;/PlatformTarget&gt;
+  &lt;DebugType&gt;pdbonly&lt;/DebugType&gt;
+  &lt;Optimize&gt;true&lt;/Optimize&gt;
+  &lt;OutputPath&gt;bin\Release\&lt;/OutputPath&gt;
+  &lt;DefineConstants&gt;TRACE&lt;/DefineConstants&gt;
+  &lt;ErrorReport&gt;prompt&lt;/ErrorReport&gt;
+  &lt;WarningLevel&gt;4&lt;/WarningLevel&gt;
+  &lt;CodeContractsEnableRuntimeChecking&gt;False&lt;/CodeContractsEnableRuntimeChecking&gt;
+  &lt;CodeContractsRuntimeOnlyPublicSurface&gt;False&lt;/CodeContractsRuntimeOnlyPublicSurface&gt;
+  &lt;CodeContractsRuntimeThrowOnFailure&gt;True&lt;/CodeContractsRuntimeThrowOnFailure&gt;
+  &lt;CodeContractsRuntimeCallSiteRequires&gt;False&lt;/CodeContractsRuntimeCallSiteRequires&gt;
+  &lt;CodeContractsRuntimeSkipQuantifiers&gt;False&lt;/CodeContractsRuntimeSkipQuantifiers&gt;
+  &lt;CodeContractsRunCodeAnalysis&gt;False&lt;/CodeContractsRunCodeAnalysis&gt;
+  &lt;CodeContractsNonNullObligations&gt;True&lt;/CodeContractsNonNullObligations&gt;
+  &lt;CodeContractsBoundsObligations&gt;True&lt;/CodeContractsBoundsObligations&gt;
+  &lt;CodeContractsArithmeticObligations&gt;False&lt;/CodeContractsArithmeticObligations&gt;
+  &lt;CodeContractsEnumObligations&gt;False&lt;/CodeContractsEnumObligations&gt;
+  &lt;CodeContractsRedundantAssumptions&gt;False&lt;/CodeContractsRedundantAssumptions&gt;
+  &lt;CodeContractsMissingPublicRequiresAsWarnings&gt;True&lt;/CodeContractsMissingPublicRequiresAsWarnings&gt;
+  &lt;CodeContractsInferRequires&gt;True&lt;/CodeContractsInferRequires&gt;
+  &lt;CodeContractsInferEnsures&gt;False&lt;/CodeContractsInferEnsures&gt;
+  &lt;CodeContractsInferObjectInvariants&gt;False&lt;/CodeContractsInferObjectInvariants&gt;
+  &lt;CodeContractsSuggestAssumptions&gt;False&lt;/CodeContractsSuggestAssumptions&gt;
+  &lt;CodeContractsSuggestRequires&gt;True&lt;/CodeContractsSuggestRequires&gt;
+  &lt;CodeContractsSuggestObjectInvariants&gt;False&lt;/CodeContractsSuggestObjectInvariants&gt;
+  &lt;CodeContractsRunInBackground&gt;True&lt;/CodeContractsRunInBackground&gt;
+  &lt;CodeContractsShowSquigglies&gt;True&lt;/CodeContractsShowSquigglies&gt;
+  &lt;CodeContractsUseBaseLine&gt;False&lt;/CodeContractsUseBaseLine&gt;
+  &lt;CodeContractsEmitXMLDocs&gt;True&lt;/CodeContractsEmitXMLDocs&gt;
+  &lt;CodeContractsCustomRewriterAssembly /&gt;
+  &lt;CodeContractsCustomRewriterClass /&gt;
+  &lt;CodeContractsLibPaths /&gt;
+  &lt;CodeContractsExtraRewriteOptions /&gt;
+  &lt;CodeContractsExtraAnalysisOptions /&gt;
+  &lt;CodeContractsSQLServerOption /&gt;
+  &lt;CodeContractsBaseLineFile /&gt;
+  &lt;CodeContractsCacheAnalysisResults&gt;True&lt;/CodeContractsCacheAnalysisResults&gt;
+  &lt;CodeContractsFailBuildOnWarnings&gt;False&lt;/CodeContractsFailBuildOnWarnings&gt;
+  &lt;CodeContractsRuntimeCheckingLevel&gt;Full&lt;/CodeContractsRuntimeCheckingLevel&gt;
+  &lt;CodeContractsReferenceAssembly&gt;Build&lt;/CodeContractsReferenceAssembly&gt;
+  &lt;CodeContractsAnalysisWarningLevel&gt;0&lt;/CodeContractsAnalysisWarningLevel&gt;
+&lt;/PropertyGroup&gt;
+&lt;PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'DebugCC|AnyCPU'"&gt;
+  &lt;DebugSymbols&gt;true&lt;/DebugSymbols&gt;
+  &lt;OutputPath&gt;bin\DebugCC\&lt;/OutputPath&gt;
+  &lt;DefineConstants&gt;DEBUG;TRACE&lt;/DefineConstants&gt;
+  &lt;DebugType&gt;full&lt;/DebugType&gt;
+  &lt;PlatformTarget&gt;AnyCPU&lt;/PlatformTarget&gt;
+  &lt;ErrorReport&gt;prompt&lt;/ErrorReport&gt;
+  &lt;CodeAnalysisRuleSet&gt;MinimumRecommendedRules.ruleset&lt;/CodeAnalysisRuleSet&gt;
+  &lt;CodeContractsEnableRuntimeChecking&gt;True&lt;/CodeContractsEnableRuntimeChecking&gt;
+  &lt;CodeContractsRuntimeOnlyPublicSurface&gt;False&lt;/CodeContractsRuntimeOnlyPublicSurface&gt;
+  &lt;CodeContractsRuntimeThrowOnFailure&gt;True&lt;/CodeContractsRuntimeThrowOnFailure&gt;
+  &lt;CodeContractsRuntimeCallSiteRequires&gt;False&lt;/CodeContractsRuntimeCallSiteRequires&gt;
+  &lt;CodeContractsRuntimeSkipQuantifiers&gt;False&lt;/CodeContractsRuntimeSkipQuantifiers&gt;
+  &lt;CodeContractsRunCodeAnalysis&gt;True&lt;/CodeContractsRunCodeAnalysis&gt;
+  &lt;CodeContractsNonNullObligations&gt;True&lt;/CodeContractsNonNullObligations&gt;
+  &lt;CodeContractsBoundsObligations&gt;True&lt;/CodeContractsBoundsObligations&gt;
+  &lt;CodeContractsArithmeticObligations&gt;False&lt;/CodeContractsArithmeticObligations&gt;
+  &lt;CodeContractsEnumObligations&gt;False&lt;/CodeContractsEnumObligations&gt;
+  &lt;CodeContractsRedundantAssumptions&gt;False&lt;/CodeContractsRedundantAssumptions&gt;
+  &lt;CodeContractsMissingPublicRequiresAsWarnings&gt;True&lt;/CodeContractsMissingPublicRequiresAsWarnings&gt;
+  &lt;CodeContractsInferRequires&gt;True&lt;/CodeContractsInferRequires&gt;
+  &lt;CodeContractsInferEnsures&gt;False&lt;/CodeContractsInferEnsures&gt;
+  &lt;CodeContractsInferObjectInvariants&gt;False&lt;/CodeContractsInferObjectInvariants&gt;
+  &lt;CodeContractsSuggestAssumptions&gt;False&lt;/CodeContractsSuggestAssumptions&gt;
+  &lt;CodeContractsSuggestRequires&gt;True&lt;/CodeContractsSuggestRequires&gt;
+  &lt;CodeContractsSuggestObjectInvariants&gt;False&lt;/CodeContractsSuggestObjectInvariants&gt;
+  &lt;CodeContractsRunInBackground&gt;True&lt;/CodeContractsRunInBackground&gt;
+  &lt;CodeContractsShowSquigglies&gt;True&lt;/CodeContractsShowSquigglies&gt;
+  &lt;CodeContractsUseBaseLine&gt;False&lt;/CodeContractsUseBaseLine&gt;
+  &lt;CodeContractsEmitXMLDocs&gt;True&lt;/CodeContractsEmitXMLDocs&gt;
+  &lt;CodeContractsCustomRewriterAssembly /&gt;
+  &lt;CodeContractsCustomRewriterClass /&gt;
+  &lt;CodeContractsLibPaths /&gt;
+  &lt;CodeContractsExtraRewriteOptions /&gt;
+  &lt;CodeContractsExtraAnalysisOptions /&gt;
+  &lt;CodeContractsSQLServerOption&gt;.\SQLEXPRESS&lt;/CodeContractsSQLServerOption&gt;
+  &lt;CodeContractsBaseLineFile /&gt;
+  &lt;CodeContractsCacheAnalysisResults&gt;True&lt;/CodeContractsCacheAnalysisResults&gt;
+  &lt;CodeContractsFailBuildOnWarnings&gt;False&lt;/CodeContractsFailBuildOnWarnings&gt;
+  &lt;CodeContractsRuntimeCheckingLevel&gt;Full&lt;/CodeContractsRuntimeCheckingLevel&gt;
+  &lt;CodeContractsReferenceAssembly&gt;Build&lt;/CodeContractsReferenceAssembly&gt;
+  &lt;CodeContractsAnalysisWarningLevel&gt;1&lt;/CodeContractsAnalysisWarningLevel&gt;
+&lt;/PropertyGroup&gt;
+</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <h2>Writing Contracts</h2>
 
     <h3>Method Anatomy with Code Contracts</h3>
