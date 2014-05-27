@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Diagnostics.Contracts;
-using System.Text;
 
 namespace CCSnippets
 {
     internal class Program
     {
         private static void Main(string[] args) {
-
-            Console.WriteLine(new StringBuilder("abc123").FluentDouble());
-
             var text = "sample";
             var someLetter = text[RandomIndices(text.Length, 20)[11]];
             Console.Write(someLetter);
@@ -34,25 +30,5 @@ namespace CCSnippets
 
     }
 
-    internal static class SbEx
-    {
-
-public static StringBuilder FluentDouble(this StringBuilder sb) {
-
-    if (sb == null) throw new ArgumentNullException("sb");
-
-    Contract.Requires(sb.Length > 0);
-
-    Contract.Ensures(Contract.Result<StringBuilder>().Length == Contract.OldValue(sb.Length) * 2);
-
-    Contract.EnsuresOnThrow<InvalidOperationException>(sb.Length == Contract.OldValue(sb.Length));
-
-    Contract.EndContractBlock();
-
-    return sb.Append(sb.ToString());
-
-}
-
-    }
 
 }

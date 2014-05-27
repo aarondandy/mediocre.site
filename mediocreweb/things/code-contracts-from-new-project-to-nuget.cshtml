@@ -72,13 +72,12 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
     
     <p>
       While the Code Contracts tools are free they may not be installed in Express Editions of Visual Studio.
-      Also because the interface for Code Contracts is within the .NET Framework 4.0,
-      you must be able to code against at least .NET 4 .
-      So far I have only used the tools with Visual Studio 2010 and 2012 but from reading the forums
-      it sounds like 2013 works too.
+      Also because the code interface for Code Contracts is within the .NET Framework 4.0,
+      you must be able to reference at least .NET 4 .
+      So far I have only used the tools with Visual Studio 2010 and 2012 but they should work with 2013 too.
       With all that said you don't need to feel bound to a paid version of Visual Studio forever.
       If in the future you can't afford the next paid version of Visual Studio you will likely
-      lose access to the Code Contracts tooling but your code will still compile, provided you follow my advice.
+      lose access to the Code Contracts tools but your code will still compile, provided you follow my advice.
     </p>
 
     <h3>Build Configurations</h3>
@@ -136,7 +135,6 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
     <p>
       You have to configure Code Contracts for each project that you want to use it for.
       I configure each of the three configurations differently.
-      I will explain later some of the reasons for these different configurations but for now this should get you started.
     </p>
 
     <div class="well how-i-do-it">
@@ -213,7 +211,6 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
           <div class="panel-body">
             <pre class="brush: xml">
 &lt;PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' "&gt;
-  &lt;PlatformTarget&gt;AnyCPU&lt;/PlatformTarget&gt;
   &lt;DebugType&gt;pdbonly&lt;/DebugType&gt;
   &lt;Optimize&gt;true&lt;/Optimize&gt;
   &lt;OutputPath&gt;bin\Release\&lt;/OutputPath&gt;
@@ -228,16 +225,17 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
   &lt;CodeContractsRunCodeAnalysis&gt;False&lt;/CodeContractsRunCodeAnalysis&gt;
   &lt;CodeContractsNonNullObligations&gt;True&lt;/CodeContractsNonNullObligations&gt;
   &lt;CodeContractsBoundsObligations&gt;True&lt;/CodeContractsBoundsObligations&gt;
-  &lt;CodeContractsArithmeticObligations&gt;False&lt;/CodeContractsArithmeticObligations&gt;
-  &lt;CodeContractsEnumObligations&gt;False&lt;/CodeContractsEnumObligations&gt;
-  &lt;CodeContractsRedundantAssumptions&gt;False&lt;/CodeContractsRedundantAssumptions&gt;
+  &lt;CodeContractsArithmeticObligations&gt;True&lt;/CodeContractsArithmeticObligations&gt;
+  &lt;CodeContractsEnumObligations&gt;True&lt;/CodeContractsEnumObligations&gt;
+  &lt;CodeContractsRedundantAssumptions&gt;True&lt;/CodeContractsRedundantAssumptions&gt;
   &lt;CodeContractsMissingPublicRequiresAsWarnings&gt;True&lt;/CodeContractsMissingPublicRequiresAsWarnings&gt;
   &lt;CodeContractsInferRequires&gt;True&lt;/CodeContractsInferRequires&gt;
   &lt;CodeContractsInferEnsures&gt;False&lt;/CodeContractsInferEnsures&gt;
   &lt;CodeContractsInferObjectInvariants&gt;False&lt;/CodeContractsInferObjectInvariants&gt;
   &lt;CodeContractsSuggestAssumptions&gt;False&lt;/CodeContractsSuggestAssumptions&gt;
-  &lt;CodeContractsSuggestRequires&gt;True&lt;/CodeContractsSuggestRequires&gt;
+  &lt;CodeContractsSuggestRequires&gt;False&lt;/CodeContractsSuggestRequires&gt;
   &lt;CodeContractsSuggestObjectInvariants&gt;False&lt;/CodeContractsSuggestObjectInvariants&gt;
+  &lt;CodeContractsSuggestReadonly&gt;True&lt;/CodeContractsSuggestReadonly&gt;
   &lt;CodeContractsRunInBackground&gt;True&lt;/CodeContractsRunInBackground&gt;
   &lt;CodeContractsShowSquigglies&gt;True&lt;/CodeContractsShowSquigglies&gt;
   &lt;CodeContractsUseBaseLine&gt;False&lt;/CodeContractsUseBaseLine&gt;
@@ -251,6 +249,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
   &lt;CodeContractsBaseLineFile /&gt;
   &lt;CodeContractsCacheAnalysisResults&gt;True&lt;/CodeContractsCacheAnalysisResults&gt;
   &lt;CodeContractsFailBuildOnWarnings&gt;False&lt;/CodeContractsFailBuildOnWarnings&gt;
+  &lt;CodeContractsBeingOptimisticOnExternal&gt;True&lt;/CodeContractsBeingOptimisticOnExternal&gt;
   &lt;CodeContractsRuntimeCheckingLevel&gt;Full&lt;/CodeContractsRuntimeCheckingLevel&gt;
   &lt;CodeContractsReferenceAssembly&gt;Build&lt;/CodeContractsReferenceAssembly&gt;
   &lt;CodeContractsAnalysisWarningLevel&gt;0&lt;/CodeContractsAnalysisWarningLevel&gt;
@@ -271,16 +270,17 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
   &lt;CodeContractsRunCodeAnalysis&gt;True&lt;/CodeContractsRunCodeAnalysis&gt;
   &lt;CodeContractsNonNullObligations&gt;True&lt;/CodeContractsNonNullObligations&gt;
   &lt;CodeContractsBoundsObligations&gt;True&lt;/CodeContractsBoundsObligations&gt;
-  &lt;CodeContractsArithmeticObligations&gt;False&lt;/CodeContractsArithmeticObligations&gt;
-  &lt;CodeContractsEnumObligations&gt;False&lt;/CodeContractsEnumObligations&gt;
-  &lt;CodeContractsRedundantAssumptions&gt;False&lt;/CodeContractsRedundantAssumptions&gt;
+  &lt;CodeContractsArithmeticObligations&gt;True&lt;/CodeContractsArithmeticObligations&gt;
+  &lt;CodeContractsEnumObligations&gt;True&lt;/CodeContractsEnumObligations&gt;
+  &lt;CodeContractsRedundantAssumptions&gt;True&lt;/CodeContractsRedundantAssumptions&gt;
   &lt;CodeContractsMissingPublicRequiresAsWarnings&gt;True&lt;/CodeContractsMissingPublicRequiresAsWarnings&gt;
   &lt;CodeContractsInferRequires&gt;True&lt;/CodeContractsInferRequires&gt;
   &lt;CodeContractsInferEnsures&gt;False&lt;/CodeContractsInferEnsures&gt;
   &lt;CodeContractsInferObjectInvariants&gt;False&lt;/CodeContractsInferObjectInvariants&gt;
   &lt;CodeContractsSuggestAssumptions&gt;False&lt;/CodeContractsSuggestAssumptions&gt;
-  &lt;CodeContractsSuggestRequires&gt;True&lt;/CodeContractsSuggestRequires&gt;
+  &lt;CodeContractsSuggestRequires&gt;False&lt;/CodeContractsSuggestRequires&gt;
   &lt;CodeContractsSuggestObjectInvariants&gt;False&lt;/CodeContractsSuggestObjectInvariants&gt;
+  &lt;CodeContractsSuggestReadonly&gt;True&lt;/CodeContractsSuggestReadonly&gt;
   &lt;CodeContractsRunInBackground&gt;True&lt;/CodeContractsRunInBackground&gt;
   &lt;CodeContractsShowSquigglies&gt;True&lt;/CodeContractsShowSquigglies&gt;
   &lt;CodeContractsUseBaseLine&gt;False&lt;/CodeContractsUseBaseLine&gt;
@@ -294,6 +294,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
   &lt;CodeContractsBaseLineFile /&gt;
   &lt;CodeContractsCacheAnalysisResults&gt;True&lt;/CodeContractsCacheAnalysisResults&gt;
   &lt;CodeContractsFailBuildOnWarnings&gt;False&lt;/CodeContractsFailBuildOnWarnings&gt;
+  &lt;CodeContractsBeingOptimisticOnExternal&gt;True&lt;/CodeContractsBeingOptimisticOnExternal&gt;
   &lt;CodeContractsRuntimeCheckingLevel&gt;Full&lt;/CodeContractsRuntimeCheckingLevel&gt;
   &lt;CodeContractsReferenceAssembly&gt;Build&lt;/CodeContractsReferenceAssembly&gt;
   &lt;CodeContractsAnalysisWarningLevel&gt;1&lt;/CodeContractsAnalysisWarningLevel&gt;
@@ -374,7 +375,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
         </p>
         <p>
           Also note that while Contract.Requires does have a generic option available I do <em><strong>not</strong></em> use it.
-          The generic versions require a post build step to run correctly while standard preconditions work just fine.
+          The generic versions <em>must</em> be run through a post build step while standard preconditions and non-generic Contract.Requires will be fine right out of the compiler.
           Using the generic versions of Contract.Requires without rewriting your IL from CCRewrite will cause problems like in this
           <a href="http://stackoverflow.com/questions/19365702/why-has-my-webapi-rest-method-broken-over-the-weekend">example</a>.
         </p>
@@ -768,15 +769,15 @@ static string FindLongest(string[] items) {
     </p>
     <pre class="brush: csharp">
 static string Multiply(string s, int n) {
-  Contract.Requires(n &gt;= 0);
-  Contract.Requires(s != null);
-  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
-  Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
-  var builder = new StringBuilder(s, s.Length * n);
-  for (int i = 1; i &lt; n; i++)
-      builder.Append(s);
-  // CodeContracts: ensures unproven: Contract.Result&lt;string&gt;().Length == s.Length * n
-  return builder.ToString();
+    Contract.Requires(n &gt;= 0);
+    Contract.Requires(s != null);
+    Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+    Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+    var builder = new StringBuilder(s.Length * n);
+    for (int i = 0; i &lt; n; i++)
+        builder.Append(s);
+    // CodeContracts: ensures unproven: Contract.Result&lt;string&gt;().Length == s.Length * n
+    return builder.ToString();
 }
 </pre>
     <p>
@@ -784,22 +785,22 @@ static string Multiply(string s, int n) {
     </p>
         <pre class="brush: csharp">
 static string Multiply(string s, int n) {
-  Contract.Requires(n &gt;= 0);
-  Contract.Requires(s != null);
-  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
-  Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
-  var builder = new StringBuilder(s, s.Length * n);
-  for (int i = 1; i &lt; n; i++)
-      builder.Append(s);
-  Contract.Assume(builder.ToString().Length == s.Length * n); // fix
-  return builder.ToString();
+    Contract.Requires(n &gt;= 0);
+    Contract.Requires(s != null);
+    Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+    Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+    var builder = new StringBuilder(s.Length * n);
+    for (int i = 0; i &lt; n; i++)
+        builder.Append(s);
+    Contract.Assume(builder.ToString().Length == s.Length * n); // fix
+    return builder.ToString();
 }
 </pre>
     <h2>Conditional Contracts</h2>
     <p>
       Most contracts are written as facts that must always hold as preconditions, postconditions, or invariants but sometimes flexibility is needed.
       Sometimes you need the flexibility to say that a contract is only expected to hold in specific situations.
-      Sadly there is no direct way to do this with Code Contracts but there are of course ways around it.
+      Sadly there is no direct way to do this with Code Contracts but there are ways around it.
     </p>
     <pre class="brush: csharp">
 public static Response Request(string search) {
@@ -835,7 +836,7 @@ static void Main(string[] args) {
       as shown below.
     </p>
     
-    <div>Note: The names for these styles are totally made up.</div>
+    <div>Note: The names for these techniques are totally made up.</div>
 
     <h3>Ternary Contracts</h3>
     <p>
@@ -909,7 +910,7 @@ Contract.Ensures(
       Preconditions may take you by surprise in that they can only appear in base or root implementations of methods.
       Methods that inherit from that base may not add new preconditions and can not remove preconditions.
       There are logical reasons for why preconditions may not be added and there are technical reasons for why they can not be removed.
-      The documentation states pretty clearly that preconditions can not be removed because they said so.
+      The documentation states pretty clearly that preconditions can not be removed because they said so and did not implement that.
       To understand why they may not be added lets go over an example.
     </p>
     <p>
@@ -924,7 +925,7 @@ Contract.Ensures(
       Postconditions mostly work how you may expect (when they do).
       You can define postconditions for the base method and inheriting implementations may add extra postconditions.
       So long as there are no conflicts in the logic it should work
-      <strong>but</strong> as of April 2014 the additional postconditions only seem to have an effect within the derived class.
+      <strong>but</strong> as of May 2014 the additional postconditions only seem to have an effect within the derived class, not those using it.
       You could ensure that all instances of <code>class Mammal</code> poop and add that <code>class Whale : Mammal</code> has huge poops.
       When dealing with mammals you know there will be a mess to dispose of and when dealing with whales the mess will be large.
     </p>
