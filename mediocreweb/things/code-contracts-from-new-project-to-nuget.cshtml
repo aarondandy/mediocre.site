@@ -51,7 +51,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             I could make all kinds of tests pass for this code but I still have a bad feeling about it.
             Aside from it being terrible code there are so many opportunities for null and index related exceptions.
             I can't tell from looking at this code the relationships and restrictions for the parameters, variables and results.
-            In these situations it can be hard to find all of the corner cases to test for or even honest mistakes that have been overlooked.
+            In these situations it can be hard to find all of the corner cases to test for and mistakes that have been overlooked.
         </p>
 
         <p>
@@ -59,7 +59,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             for VB and C#. Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts(v=vs.110).aspx">System.Diagnostics.Contracts Namespace</a>
             included with .NET 4.0 and the <a href="http://research.microsoft.com/en-us/projects/contracts/">Code Contracts</a> tools you can further
             define the behavior of your software and verify it at compile time as well as run time.
-            With Code Contracts I can prove at "compile time" that the nasty example above does not throw
+            With Code Contracts I can prove at <strong>compile time</strong> that the nasty example above does not throw
             or at least define the domain in which it won't.
         </p>
 
@@ -74,12 +74,12 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
 
         <p>
             While the Code Contracts tools are free they may not be installed in Express Editions of Visual Studio.
-            Also because the code interface for Code Contracts is within the .NET Framework 4.0,
+            Also because the API for Code Contracts is within the .NET Framework 4.0,
             you must be able to reference at least .NET 4 .
             So far I have used the tools with Visual Studio 2010, 2012, and 2013 and can confirm that they work.
             With all that said you don't need to feel bound to a paid version of Visual Studio forever.
             If in the future you can't afford the next paid version of Visual Studio you will likely
-            lose access to the Code Contracts tools but your code will still compile (so long as you don't use the generic forms of Contract.Requires).
+            lose access to the Code Contracts tools but your code will still compile and run (so long as you don't use the generic forms of Contract.Requires).
         </p>
 
         <h3>Build Configurations</h3>
@@ -105,7 +105,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             <dt>DebugCC</dt>
             <dd>
                 The DebugCC configuration is based on the Debug configuration but has Code Contracts tooling enabled.
-                I periodically build and test with this configuration, often as I get close to a stopping point.
+                I periodically build and test with this configuration, often when I reach a stopping point.
             </dd>
         </dl>
 
@@ -346,10 +346,11 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
              class="img-responsive" />
 
         <h3>Preconditions</h3>
-        <div class="todo">Rewrite this</div>
         <p>
-            As preconditions are to be checked before a method performs its real work they are the first statements within the contract block of a method.
-            Preconditions can be written in two forms:
+            Preconditions define what is required for a method to be executed.
+            They can validate parameters, object state, or even evaluate complex expressions (do keep it simple though).
+            As preconditions are to be checked before a method performs its real work it's pretty conventient that they are placed at the top of the method body,
+            right where you probably have been writing them all along.
         </p>
         <dl>
             <dt>&quot;legacy&quot; requires (standard preconditions)</dt>
@@ -359,21 +360,20 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
                     These preconditions are written using a basic <code class="brush: csharp;">if( ! precondition) throw new SpecificException();</code> statement
                     and must be the first preconditions in the contract block.
                     I suppose the name would make sense if code contracts were built into the language but they are not so I don't feel the name is appropriate.
-                    I will refer to them as <em>standard preconditions</em> from now on.
+                    I will refer to them as <em>standard preconditions</em> from now on, <code>if</code> and <code>throw</code> are not deprecated yet.
                     Note that when using standard preconditions without any other calls to Contract.Requires or Contract.Ensures a call to
                     <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.endcontractblock(v=vs.110).aspx">Contract.EndContractBlock</a>
-                    is required to complete the contract block.
+                    is required to complete the contract block. A call to some method on the Contract type is required to create a contract block.
                 </p>
             </dd>
             <dt>Contract.Requires</dt>
             <dd>
                 <p>
                     The <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.requires(v=vs.110).aspx">Contract.Requires</a> methods
-                    are another way to specify preconditions. They act similar to an assertion except they are omitted from my programs when building the Release configuration
-                    and more importantly they apply to the state of the method before it is executed.
-                    While this seems pointless it has its uses.
-                    This approach supplies the Code Contracts static analysis tool with information but can be omitted from the software in release builds
-                    offering safety without sacrificing performance.
+                    are another way to specify preconditions. They act similar to an assertion in that they throw when the condition is not met and are ommited from my release bulds
+                    but they are specialized in that they apply to the state of the method before it is executed.
+                    While ommiting preconditions from a release build seems pointless it does have its uses.
+                    This approach supplies the Code Contracts static analysis tool with information, offering safety without sacrificing performance.
                 </p>
                 <p>
                     Also note that while Contract.Requires does have a generic option available I do <em><strong>not</strong></em> use it.
@@ -441,7 +441,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
 
         <p>
             Using Contract.Requires in these situations with my build configuration allows
-            these redundant checks to be omitted in Release builds.
+            these redundant checks to be omitted in Release builds due to them having a conditional compilation attribute.
             When combined with comprehensive tests and the Code Contracts static analysis tool
             this technique can increase safety with little or no performance penalty.
         </p>
@@ -508,7 +508,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
             but it is possible to create postconditions that can refer to state when a method was initially called.
             The <a href="http://msdn.microsoft.com/en-us/library/dd412857(v=vs.110).aspx">Contract.OldValue</a> method instructs the rewrite tool
             to remember the state of a variable when method execution begins so it can be used later in a postcondition.
-            This makes it possible to create contrcts describing changes and constants, like the effect of adding an item to a collection
+            This makes it possible to create contrcts describing changes and constants, like the side effect of adding an item to a collection
             <code>Contract.Ensures(Count > Contract.OldValue(Count));</code> or data integrity as in the above <code>Invert</code> example.
         </p>
 
@@ -525,22 +525,18 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
 
         <pre class="brush: csharp">
 public class Range {
-
     public Range(double min, double max) {
         if (!(min &lt;= max)) throw new ArgumentException();
         Contract.EndContractBlock();
         Min = min;
         Max = max;
     }
-
     public double Min { get; private set; }
     public double Max { get; private set; }
-
     [ContractInvariantMethod]
     private void ObjectInvariants() {
         Contract.Invariant(Min &lt;= Max);
     }
-
     public double GetMagnitude(){
         Contract.Ensures(Contract.Result&lt;double&gt;() &gt;= 0);
         return Max - Min;
@@ -1045,8 +1041,10 @@ internal abstract class SomeBaseContracts : SomeBase {
             Finally there is the simple <code>pure</code> tag that will mark a method as pure.
         </p>
 
-        <p class="todo">
-            How to consume, XML example?
+        <p>
+            At the moment the only complete way to include contract information in your documentation is through Sandcastle (please do correct me).
+            The Code Contracts installer includes a patch that can be applied to Sandcastle located at
+            <code>{Program Files}\Microsoft\Contracts\Sandcastle\Sandcastle.zip</code> .
         </p>
 
         <h3>NuGet</h3>

@@ -27,8 +27,9 @@
       </div>
       <div class="row">
         <footer class="col-12 col-lg-12">
-          I'm Aaron Dandy, a software developer and a human.
+          I'm <span id="name-fn">Aaron</span> <span id="name-ln">Dandy</span>, a software developer and a human.
           <ul class="list-unstyled">
+            <li><div id="contact-link" onmouseover="switcharoo()" style="text-decoration: underline">first.last@live.com</div></li>
             <li><a href="http://github.com/aarondandy">My GitHub</a></li>
             <li><a href="http://mediocresoft.com/vertesaur">Vertesaur</a></li>
             <li><a href="http://mediocresoft.com/dandydoc">Dandy Doc</a></li>
@@ -36,6 +37,14 @@
         </footer>
       </div>
     </div>
+    <script language="javascript">
+        function switcharoo() {
+            // I bet this is all pointless
+            var x = function (x) { return document.getElementById("name-" + x).innerText.toLowerCase(); };
+            x = x("fn") + "." + x("ln") + "@@bc"[0] + "moc.evil".split("").reverse().join("");
+            document.getElementById("contact-link").innerHTML = "<a href='mailto:" + x + "'>" + x + "</a>";
+        };
+    </script>
   </body>
   @if (!Global.AppHost.IsDebug) {
     Html.Partial("_ga");
