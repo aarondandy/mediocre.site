@@ -6,9 +6,9 @@ namespace CCSnippets
     internal class Program
     {
         private static void Main(string[] args) {
-            var text = "sample";
-            var someLetter = text[RandomIndices(text.Length, 20)[11]];
-            Console.Write(someLetter);
+            var a = Range.Enclose(1, 2);
+            var b = Range.Enclose(2, 1);
+            Console.WriteLine("{0},{1}", a.Magnitude, b.Magnitude);
             Console.ReadKey();
         }
 

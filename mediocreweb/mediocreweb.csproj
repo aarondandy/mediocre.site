@@ -178,7 +178,9 @@
     <Compile Include="things\ThingIndex.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="packages.config" />
+    <Content Include="packages.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="views\_SiteLayout.cshtml" />
     <Content Include="default.cshtml" />
     <Content Include="things\export-visual-studio-colors-for-syntaxhighlighter.cshtml" />
