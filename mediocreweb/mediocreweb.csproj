@@ -148,7 +148,7 @@
     <Content Include="js\sh\shBrushXml.js" />
     <Content Include="js\sh\shCore.js" />
     <Content Include="js\sh\shLegacy.js" />
-    <None Include="things\code-contracts-from-new-project-to-nuget.cshtml" />
+    <Content Include="things\code-contracts-from-new-project-to-nuget.cshtml" />
     <Content Include="things\garbage-file\2012-dark-for-2010-preview-thumb.jpg" />
     <Content Include="things\garbage-file\2012-dark-for-2010-preview.jpg" />
     <Content Include="things\garbage-file\blank_servicestack_metadata.png" />
