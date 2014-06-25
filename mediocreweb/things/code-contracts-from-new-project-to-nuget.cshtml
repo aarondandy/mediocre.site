@@ -23,13 +23,55 @@
     <div class="col-md-3">
         <nav class="pagenav visible-md visible-lg" id="pagenav">
             <ul class="nav">
-                <li>nav</li>
+                <li><a href="#intro">Introduction</a></li>
+                <li>
+                    <a href="#get-started">Getting Started</a>
+                    <ul class="nav">
+                        <li><a href="#what-you-need">What You Need</a></li>
+                        <li><a href="#build-config">Build Configurations</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#write-contracts">Writing Contracts</a>
+                    <ul class="nav">
+                        <li><a href="#method-anatomy">Method Anatomy with Code Contracts</a></li>
+                        <li><a href="#preconditions">Preconditions</a></li>
+                        <li><a href="#postconditions">Postconditions</a></li>
+                        <li><a href="#invariants">Invariants</a></li>
+                    </ul>
+                </li>
+                <li><a href="#purity">Purity</a></li>
+                <li><a href="#collections">Contracts for Collections</a></li>
+                <li><a href="#static-analysis">Static Analysis</a></li>
+                <li><a href="#assume-assert">Assume and Assert</a></li>
+                <li>
+                    <a href="#conditional">Conditional Contracts</a>
+                    <ul class="nav">
+                        <li><a href="#ternary-contracts">Ternary Contracts</a></li>
+                        <li><a href="#not-possible-contracts">State an Impossibility</a></li>
+                        <li><a href="#this-or-that">This or That</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#inheritance">Inheritance</a>
+                    <ul class="nav">
+                        <li><a href="#basic-rules-inheritance">Basic Rules for Inheritance</a></li>
+                        <li><a href="#abstract-contract">Contracts Without Bodies</a></li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#distribution">Distribution</a>
+                    <ul class="nav">
+                        <li><a href="#docs">Documentation</a></li>
+                        <li><a href="#nuget">NuGet</a></li>
+                    </ul>
+                </li>
             </ul>
         </nav>
     </div>
     <div class="col-md-9">
 
-        <h2 id="cc-intro">Introduction</h2>
+        <h2 id="intro">Introduction</h2>
 
         <p>
             It can be very difficult to trust code written by others and especially myself.
@@ -63,8 +105,8 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             or at least define the domain in which it won't.
         </p>
 
-        <h2>Getting Started</h2>
-        <h3>What You Need</h3>
+        <h2 id="get-started">Getting Started</h2>
+        <h3 id="what-you-need">What You Need</h3>
 
         <ul>
             <li>Visual Studio Pro or more expensive</li>
@@ -82,7 +124,7 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             lose access to the Code Contracts tools but your code will still compile and run (so long as you don't use the generic forms of Contract.Requires).
         </p>
 
-        <h3>Build Configurations</h3>
+        <h3 id="build-config">Build Configurations</h3>
 
         <p>
             By default your projects will have a Debug and Release configuration.
@@ -308,9 +350,9 @@ char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
             </div>
         </div>
 
-        <h2>Writing Contracts</h2>
+        <h2 id="write-contracts">Writing Contracts</h2>
 
-        <h3>Method Anatomy with Code Contracts</h3>
+        <h3 id="method-anatomy">Method Anatomy with Code Contracts</h3>
 
         <pre class="brush: csharp">
 public StringBuilder FluentDouble(this StringBuilder sb) {
@@ -345,7 +387,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
              alt="Code Contracts method diagram. Contracts should be in the following order: Standard Preconditions, Contract.Requires, Contract.Ensures and finally Contract.EnsuresOnThrow"
              class="img-responsive" />
 
-        <h3>Preconditions</h3>
+        <h3 id="preconditions">Preconditions</h3>
         <p>
             Preconditions define what is required for a method to be executed.
             They can validate parameters, object state, or even evaluate complex expressions (do keep it simple though).
@@ -445,7 +487,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
             When combined with comprehensive tests and the Code Contracts static analysis tool
             this technique can increase safety with little or no performance penalty.
         </p>
-        <h3>Postconditions</h3>
+        <h3 id="postconditions">Postconditions</h3>
 
         <p>
             Postconditions allow us to specify conditions that should hold when exiting a method.
@@ -512,7 +554,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
             <code>Contract.Ensures(Count > Contract.OldValue(Count));</code> or data integrity as in the above <code>Invert</code> example.
         </p>
 
-        <h3>Invariants</h3>
+        <h3 id="invariants">Invariants</h3>
         <p>
             Using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.invariant(v=vs.110).aspx">Contract.Invariant</a>
             allows for the specification of contracts that must always be true for an object instance.
@@ -545,7 +587,7 @@ public class Range {
 }
 </pre>
 
-        <h2>Purity</h2>
+        <h2 id="purity">Purity</h2>
         <p>
             All methods (properties too) that are used to write contract expressions must be pure.
             When it comes to the meaning of purity I like to go by the <a href="http://en.wikipedia.org/wiki/Pure_function">pure function entry on Wikipedia</a>.
@@ -591,7 +633,36 @@ private void DoSomething(){
             </div>
         </div>
 
-        <h2>Static Analysis</h2>
+        <h2 id="collections">Contracts for Collections</h2>
+        <p>
+            Contracts can be written for collections of values in addition to specific values.
+            By using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.forall(v=vs.110).aspx">Contract.ForAll</a>
+            and <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.exists(v=vs.110).aspx">Contract.Exists</a>
+            it is possible to specify contracts for elements within an array or enumerable.
+            It is intended to work pretty much how you may expect it to but the implementation is not all there yet.
+            I can get it to work in most situations but sometimes I feel like I am bending my code to be able to write a contract due to static analysis bugs.
+            So far I have the best luck when working with arrays and when the contract predicate is stupid simple.
+            Also note that the LINQ methods <a href="http://msdn.microsoft.com/en-us/library/vstudio/bb548541(v=vs.110).aspx">All</a> and <a href="http://msdn.microsoft.com/en-us/library/vstudio/system.linq.enumerable.any(v=vs.110).aspx">Any</a> can be used too.
+        </p>
+        <pre class="brush: csharp">
+private static int[] RandomIndices(int exclusiveLimit, int count) {
+    Contract.Requires(exclusiveLimit &gt; 0);
+    Contract.Requires(count &gt;= 0);
+    Contract.Ensures(Contract.Result&lt;int[]&gt;() != null);
+    Contract.Ensures(Contract.Result&lt;int[]&gt;().Length == count);
+    Contract.Ensures(Contract.ForAll(Contract.Result&lt;int[]&gt;(), x =&gt; x &gt;= 0));
+    Contract.Ensures(Contract.ForAll(Contract.Result&lt;int[]&gt;(), x =&gt; x &lt; exclusiveLimit));
+    var randomGenerator = new Random();
+    var result = new int[count];
+    for (int i = 0; i &lt; result.Length; i++)
+        result[i] = randomGenerator.Next(exclusiveLimit);
+    Contract.Assume(Contract.ForAll(result, x =&gt; x &lt; exclusiveLimit));
+    return result;
+}
+</pre>
+
+
+        <h2 id="static-analysis">Static Analysis</h2>
 
         <p>
             The static analysis is where Code Contracts really shines.
@@ -679,7 +750,7 @@ static string FindLongest(string[] items) {
 }
 </pre>
 
-        <h2>Assume and Assert</h2>
+        <h2 id="assume-assert">Assume and Assert</h2>
         <p>
             Sometimes the static analysis tool can't figure something out or just doesn't have enough information.
             By using <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contract.assert(v=vs.110).aspx">Contract.Assert</a>
@@ -736,7 +807,7 @@ static string Multiply(string s, int n) {
     return builder.ToString();
 }
 </pre>
-        <h2>Conditional Contracts</h2>
+        <h2 id="conditional">Conditional Contracts</h2>
         <p>
             Most contracts are written as facts that must always hold as preconditions, postconditions, or invariants but sometimes flexibility is needed.
             Sometimes you need the flexibility to say that a contract is only expected to hold in specific situations.
@@ -753,7 +824,6 @@ public static Response Request(string search) {
     }
     return new Response { Success = false };
 }
-
 static void Main(string[] args) {
     var response = Request("e");
     if (response.Success) {
@@ -778,7 +848,7 @@ static void Main(string[] args) {
 
         <div>Note: The names for these techniques are totally made up.</div>
 
-        <h3>Ternary Contracts</h3>
+        <h3 id="ternary-contracts">Ternary Contracts</h3>
         <p>
             The simplest way to write a conditional contract is with a <a href="http://msdn.microsoft.com/en-us/library/ty67wk28.aspx">ternary operator</a>.
             The basic form is <code>condition ? contract : true</code>.
@@ -809,7 +879,7 @@ Contract.Ensures(
             </tbody>
         </table>
 
-        <h3>State an Impossibility</h3>
+        <h3 id="not-possible-contracts">State an Impossibility</h3>
         <p>
             While the above format works it is a little long and some people are deeply offended by ternary expressions.
             Also having a <code>true</code> or <code>false</code> keyword in a conditional has a bit of a smell to it.
@@ -828,7 +898,7 @@ Contract.Ensures(
 );
 </pre>
 
-        <h3>This or That</h3>
+        <h3 id="this-or-that">This or That</h3>
         <p>
             The above is a bit better but the double negatives and nesting can get confusing.
             An even simpler form looks like this: <code>!(condition) || contract</code>.
@@ -841,14 +911,14 @@ Contract.Ensures(
 );
 </pre>
 
-        <h2>Inheritance</h2>
+        <h2 id="inheritance">Inheritance</h2>
         <p>
             As you use Code Contracts you may find a need to apply contracts to situations involving inheritance, interfaces and abstract classes.
             The framework and tools provide ways of accomplishing this but I have read some pretty negative opinions about it.
             While I don't disagree with some of those observations I still think the inheritance features are worth using.
         </p>
 
-        <h3>Basic Rules for Inheritance</h3>
+        <h3 id="basic-rules-inheritance">Basic Rules for Inheritance</h3>
         <p>
             The rules for how preconditions and postconditions are inherited are different.
             Preconditions may take you by surprise in that they can only appear in base or root implementations of methods.
@@ -874,7 +944,7 @@ Contract.Ensures(
             When dealing with mammals you know there will be a mess to dispose of and when dealing with whales the mess will be large.
         </p>
 
-        <h3>Contracts Without Bodies</h3>
+        <h3 id="abstract-contract">Contracts Without Bodies</h3>
         <p>
             While contracts must be declared within method bodies it is still possible to create contracts for abstract methods and interfaces.
             Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractclassattribute(v=vs.110).aspx">ContractClass</a> attribute
@@ -964,7 +1034,7 @@ internal abstract class SomeBaseContracts : SomeBase {
 </pre>
 
 
-        <h2>Distribution</h2>
+        <h2 id="distribution">Distribution</h2>
         <p>
             When an assembly has contracts and is built with the Contract Reference Assembly option set to Build a second assembly is produced as a part of the build.
             This extra assembly is written to <code>./CodeContracts/{assembly name}.Contracts.dll</code> within the output directory
@@ -1023,7 +1093,7 @@ internal abstract class SomeBaseContracts : SomeBase {
             <code>{Program Files}\Microsoft\Contracts\Contracts</code> .
         </p>
 
-        <h3>Documentation</h3>
+        <h3 id="docs">Documentation</h3>
         <p>
             When the "Emit contracts into XML doc file" option is enabled the Code Contract tools will augment the generated XML
             for members and types with a few additional tags. The extra XML doc tags match their respective contract methods:
@@ -1048,15 +1118,15 @@ internal abstract class SomeBaseContracts : SomeBase {
             There are other projects out there with Code Contracts support, one of them is mine, but I don't think any are ready for general use yet.
         </p>
 
-        <h3>NuGet</h3>
+        <h3 id="nuget">NuGet</h3>
+        <p class="alert alert-info">This secion may soon be out dated due to the upcoming ASP.NET vNext and changes to NuGet.</p>
         <p>
             Releasing contract reference assemblies along with your library in a NuGet package is not difficult but there are a few extra steps to keep in mind.
             When you manually create a nuspec file, all DLL files within are referenced when adding a package to your project.
-            Use the <code>&lt;references&gt;</code> tag to override this default behavior and explicitly specify the assemblies to reference as Contract assemblies are not to be referenced directly.
+            Use the <code>&lt;references&gt;</code> tag to override this default behavior and explicitly specify the assemblies to reference as contract assemblies are not to be referenced directly.
             You must also add the contract reference assemblies to the correct target folder within the NuGet package.
             See the following for an example nuspec file:
         </p>
-        <p class="alert alert-info">This advice may soon be out dated due to the upcoming ASP.NET vNext and changes to NuGet.</p>
         <pre class="brush:xml">
 &lt;?xml version="1.0"?&gt;
 &lt;package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd"&gt;
