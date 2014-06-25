@@ -508,7 +508,7 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
             but it is possible to create postconditions that can refer to state when a method was initially called.
             The <a href="http://msdn.microsoft.com/en-us/library/dd412857(v=vs.110).aspx">Contract.OldValue</a> method instructs the rewrite tool
             to remember the state of a variable when method execution begins so it can be used later in a postcondition.
-            This makes it possible to create contrcts describing changes and constants, like the side effect of adding an item to a collection
+            This makes it possible to create contracts describing changes and constants, like the side effect of adding an item to a collection
             <code>Contract.Ensures(Count > Contract.OldValue(Count));</code> or data integrity as in the above <code>Invert</code> example.
         </p>
 
@@ -520,7 +520,8 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
             with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractinvariantmethodattribute(v=vs.110).aspx">ContractInvariantMethod</a> attribute.
             The name of the method is not important but <code>ObjectInvariants</code> works well enough.
             Acting as something like both a Contract.Require and Contract.Ensures for each method an invariant helps to reduce the number of contracts that must be written.
-            In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object which can even reduce code.
+            In addition to saving some time with writing contracts an invariant also offers guarantees regarding the state of an object.
+            Similar to Contract.Requires, invariants are restricted from my release builds due to their conditional attribute reducing checks at runtime while still providing safety through static analysis and tests.
         </p>
 
         <pre class="brush: csharp">
@@ -550,7 +551,7 @@ public class Range {
             When it comes to the meaning of purity I like to go by the <a href="http://en.wikipedia.org/wiki/Pure_function">pure function entry on Wikipedia</a>.
             The truth though is that any method is pure if you mark it with the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.pureattribute(v=vs.110).aspx">Pure</a>
             attribute as there is no enforcement (yet) but you should not go slapping Pure on everything.
-            Keep it to methods that always return the same value for their given inputs and don't have any <a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)">side effects</a>.
+            Keep it to methods that always <a href="https://duckduckgo.com/?q=idempotent">return the same value for their given inputs</a> and don't have any <a href="https://en.wikipedia.org/wiki/Side_effect_(computer_science)">side effects</a>.
         </p>
         <div class="row">
             <div class="col-md-6">
@@ -591,13 +592,14 @@ private void DoSomething(){
         </div>
 
         <h2>Static Analysis</h2>
-        <p>
-            The static analysis tool is where I see the largest benefit from Code Contracts.
-            It is capable of analyzing the contracts as well as the code to determine if contracts are violated or if new contracts may be needed.
-            As a result I can see errors and corner cases in my code that I may not have considered or had missed in my tests.
-        </p>
 
-        <div class="todo">elaborate</div>
+        <p>
+            The static analysis is where Code Contracts really shines.
+            Finally this is where all those invariants, preconditions and postconditions come together.
+            With Code Contracts configured as I have it in my DebugCC configuration CCRewrite reads the <code>Contract</code> method calls from the <abbr title="intermediate language">IL</abbr> in the assembly and rewrites those methods so the checks can be performed.
+            CCCheck is run afterwards on the rewritten assembly and is able to make sure that all is well with respect to the contracts that have been written.
+            The Visual Studio integration allows you to jump to the places in your code where contracts violations have been found or where the tools have suggestions to improve your contracts and code safety.
+        </p>
 
         <h4>Basic Example</h4>
 
@@ -607,6 +609,7 @@ private void DoSomething(){
             There are no bounds placed on <code>a</code> or <code>b</code> so they could be anything which causes the tool to issue a warning.
             I am also given suggestions of other contracts that could be added to improve the safety of this code and
             also get pruple underlines within Visual Studio for <code>builder[a]</code> and <code>builder[b]</code>.
+            Note: Comments are added to show the messages, warnings and errors from Code Contracts.
         </p>
 
         <pre class="brush: csharp">
@@ -654,14 +657,10 @@ static string SwapLetters(string text, int a, int b) {
 
         <h4>Ensures Contract Violation Example</h4>
         <p>
-            In the following example the ensures contract is not proven to be correct.
+            In the following example the postcondition is not proven to be correct.
             The tool shows that the <code>return null;</code> will violate the postcondition.
             We are also given a suggestion to require that <code>items.Length != 0</code>
             but we could also remove or change the ensures to fix the problem.
-        </p>
-        <p>
-            Note that this example is simple enough that the error is detected at compile time but it
-            would certainly cause a contract violation at run-time when provided an empty input.
         </p>
 
         <pre class="brush: csharp">
@@ -754,6 +753,7 @@ public static Response Request(string search) {
     }
     return new Response { Success = false };
 }
+
 static void Main(string[] args) {
     var response = Request("e");
     if (response.Success) {
@@ -769,8 +769,8 @@ static void Main(string[] args) {
             In the above example the request method creates a response with an array of foods only when results are found
             and also marks the success flag as true in that situation.
             In the Main method we make use of the foods array when the success flag is true
-            but the static analysis tools don't have any way to know that the foods array is not null.
-            To satisfy the precondition on String.Join we need a way to ensure that the result of Request gives us a non-null
+            but the static analysis tool does not have a way to know that the foods array is not null.
+            To satisfy the precondition on String.Join we need a way to ensure that the result of <code>Request</code> gives us a non-null
             food list when success is true.
             Because there is no conditional mechanism built into Code Contracts some simple tricks are needed
             as shown below.
@@ -858,10 +858,10 @@ Contract.Ensures(
             To understand why they may not be added lets go over an example.
         </p>
         <p>
-            If you were to say mammals can eat anything that is delicious you are setting yourself up for a problem.
+            If you were to say Mammals can eat anything that is delicious you are setting yourself up for a problem.
             When you implement <code>public class Dog : Mammal</code> you should be placing a restriction against eating chocolate (<code>Contract.Requires(food != "chocolate");</code>).
-            While that makes sense from the perspective of the Dog type it will cause problems when the Dog is treated as a mammal.
-            When a user tries to feed chocolate to a list of mammals they may get a surprising exception if the list contains a dog,
+            While that makes sense from the perspective of the Dog type it will cause problems when the Dog is treated as a Mammal.
+            When a user tries to feed chocolate to a <code>List&lt;Mammals&gt;</code> they may get a surprising exception if the list contains a dog,
             and nobody likes surprises. Read about the <a href="http://en.wikipedia.org/wiki/Liskov_substitution_principle">Liskov substitution principle</a> for a more formal description.
             I recommend you not put preconditions on a base method unless you really think it through.
         </p>
@@ -880,7 +880,7 @@ Contract.Ensures(
             Using the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractclassattribute(v=vs.110).aspx">ContractClass</a> attribute
             and the <a href="http://msdn.microsoft.com/en-us/library/system.diagnostics.contracts.contractclassforattribute(v=vs.110).aspx">ContractClassFor</a>
             it is possible to define another type that will host the contracts for you.
-            To define contracts for an abstract method, abstract property, or an interface create a new abstract class that will hold the contracts.
+            To define contracts for an abstract method, abstract property or an interface, create a new abstract class that will hold the contracts.
             I like to use the <code>internal</code> access modifier and I name the type by adding the word "Contracts" to it.
             Apply the <code>ContractClassFor</code> attribute to the type that will host the contracts and apply the <code>ContractClass</code> attribute to the target type.
             Each attribute takes a parameter that references the other type.
@@ -914,7 +914,7 @@ public class Nope : NoiseMaker {
 }
 </pre>
         <p>
-            It get a little trickier when the inheritance gets deeper though.
+            It gets a little trickier when the inheritance gets deeper though.
             An abstract contract type must still at least specify all the method signatures of any base types and interfaces it inherits from,
             even if you don't need to add contracts to them.
             This causes some problems though because you may not declare preconditions in methods derived from a base that already declares them.
@@ -1045,13 +1045,14 @@ internal abstract class SomeBaseContracts : SomeBase {
             At the moment the only complete way to include contract information in your documentation is through Sandcastle (please do correct me).
             The Code Contracts installer includes a patch that can be applied to Sandcastle located at
             <code>{Program Files}\Microsoft\Contracts\Sandcastle\Sandcastle.zip</code> .
+            There are other projects out there with Code Contracts support, one of them is mine, but I don't think any are ready for general use yet.
         </p>
 
         <h3>NuGet</h3>
         <p>
             Releasing contract reference assemblies along with your library in a NuGet package is not difficult but there are a few extra steps to keep in mind.
             When you manually create a nuspec file, all DLL files within are referenced when adding a package to your project.
-            Use the <code>&lt;references&gt;</code> tag to override this default behavior and explicitly specify the assemblies to reference.
+            Use the <code>&lt;references&gt;</code> tag to override this default behavior and explicitly specify the assemblies to reference as Contract assemblies are not to be referenced directly.
             You must also add the contract reference assemblies to the correct target folder within the NuGet package.
             See the following for an example nuspec file:
         </p>
