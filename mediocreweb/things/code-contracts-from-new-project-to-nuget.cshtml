@@ -85,7 +85,9 @@
 string text = "hello";
 int num = 20;
 int selection = 11;
-char someLetter = text[ RandomIndices(text.Length, num)[ selection ] ];
+int[] indices = RandomIndices(text.Length,num);
+int index = indices[selection];
+char someLetter = text[index];
 </pre>
 
         <p>
@@ -862,22 +864,23 @@ Contract.Ensures(
     : true
 );
 </pre>
-
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>if</th>
-                    <td>?</td>
-                    <th>then</th>
-                    <td>:</td>
-                    <th>else</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr><td>contract condition</td><td>?</td><td>contract</td><td>:</td><td>bypass</td></tr>
-                <tr><td><code>Contract.Result&lt;Response&gt;().Success</code></td><td>?</td><td><code>Contract.Result&lt;Response&gt;().Foods != null</code></td><td>:</td><td><code>true</code></td></tr>
-            </tbody>
-        </table>
+        <div style="overflow: auto">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>if</th>
+                        <td>?</td>
+                        <th>then</th>
+                        <td>:</td>
+                        <th>else</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>contract condition</td><td>?</td><td>contract</td><td>:</td><td>bypass</td></tr>
+                    <tr><td><code>Contract.Result&lt;Response&gt;().Success</code></td><td>?</td><td><code>Contract.Result&lt;Response&gt;().Foods != null</code></td><td>:</td><td><code>true</code></td></tr>
+                </tbody>
+            </table>
+        </div>
 
         <h3 id="not-possible-contracts">State an Impossibility</h3>
         <p>
