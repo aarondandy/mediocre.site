@@ -1,0 +1,1 @@
+wyam\Wyam.exe -r Blog
