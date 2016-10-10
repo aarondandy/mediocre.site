@@ -132,13 +132,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-public class FoodListing : List&lt;Food&gt;
+public class FoodListing : List<Food>
 {
-    public IEnumerable&lt;Food&gt; GetAllFoods() {
+    public IEnumerable<Food> GetAllFoods() {
         return this.AsEnumerable();
     }
 
-    public IEnumerable&lt;Food&gt; GetEdibleFoods() {
+    public IEnumerable<Food> GetEdibleFoods() {
         return this.Where(x => x.IsDelicious || !x.MovesWhenServed);
     }
 
@@ -179,7 +179,7 @@ Lets serve up our food data by making two quick services.
 3. Next define the service code:
    ```csharp
    [Route("/food")] // maps the URI to the request model
-   public class FoodListingRequest : IReturn&lt;List&lt;Food&gt;&gt;
+   public class FoodListingRequest : IReturn<List<Food>>
    {
        public bool? GoodFood { get; set; }
    }
@@ -188,7 +188,7 @@ Lets serve up our food data by making two quick services.
    {
        public FoodListing Listing { get; set; } // we don't assign to this
    
-       public List&lt;Food&gt; Any(FoodListingRequest request) {
+       public List<Food> Any(FoodListingRequest request) {
            var results = request.GoodFood.GetValueOrDefault()
                ? Listing.GetEdibleFoods()
                : Listing.GetAllFoods();
@@ -198,7 +198,7 @@ Lets serve up our food data by making two quick services.
    
    [Route("/food/{Name}")]
    [Route("/food/details")]
-   public class FoodDetailsRequest : IReturn&lt;Food&gt;
+   public class FoodDetailsRequest : IReturn<Food>
    {
        public string Name { get; set; }
    }

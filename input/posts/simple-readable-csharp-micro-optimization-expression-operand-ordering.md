@@ -47,7 +47,7 @@ Likewise, the CIL shows the same.
 
 The `LeftHeavy` example compiled to CIL:
 
-```
+```x86asm
 ldarg.1
 ldarg.2
 mul
@@ -58,7 +58,7 @@ ret
 
 The `RightHeavy` example compiled to CIL:
 
-```
+```x86asm
 ldarg.0
 ldarg.1
 ldarg.2
@@ -74,7 +74,7 @@ Next lets look at the differences in the generated x86 instructions.
 
 The `LeftHeavy` x86 instructions:
 
-```
+```x86asm
 mov         ebp,esp
 mov         eax,dword ptr [ebp+8]
 imul        eax,edx
@@ -83,7 +83,7 @@ add         eax,ecx
 
 The `RightHeavy` x86 instructions:
 
-```
+```x86asm
 mov         ebp,esp
 mov         eax,ecx
 mov         ecx,edx

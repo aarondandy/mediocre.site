@@ -1,5 +1,5 @@
 Settings.Host = "mediocresoft.com";
 
 GlobalMetadata["Title"] = "Aaron Dandy";
-GlobalMetadata["Description"] = "Words about computers.";
-GlobalMetadata["Intro"] = "";
+GlobalMetadata["Description"] = "Words About Computers";
+GlobalMetadata["Intro"] = null;

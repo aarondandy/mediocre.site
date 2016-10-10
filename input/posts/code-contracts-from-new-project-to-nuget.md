@@ -248,10 +248,10 @@ public StringBuilder FluentDouble(this StringBuilder sb) {
   // if there are any preconditions the post conditions come after
   // normal postconditions go first
   Contract.Ensures(
-    Contract.Result&lt;StringBuilder&gt;().Length
+    Contract.Result<StringBuilder>().Length
     == Contract.OldValue(sb.Length) * 2);
   // exceptional postconditions are written after normal ones
-  Contract.EnsuresOnThrow&lt;InvalidOperationException&gt;(
+  Contract.EnsuresOnThrow<InvalidOperationException>(
     sb.Length == Contract.OldValue(sb.Length));
   // the actual method code is last
   return sb.Append(sb.ToString());
@@ -323,7 +323,7 @@ Using the standard form ensures that my checks are present in every build even i
 When a method is not publicly accessible (private or internal) I tend to use the Contract.Requires form as in the following example.
 
 ```csharp
-internal static T QuickFirstOrDefault&lt;T&gt;(this T[] array) {
+internal static T QuickFirstOrDefault<T>(this T[] array) {
     Contract.Requires(array != null);
     return array.Length == 0 ? default(T) : array[0];
 }
@@ -377,10 +377,10 @@ but they can also describe object state.
 public static IntRange Enclose(IntRange a, IntRange b) {
     if (a == null) throw new ArgumentNullException("a");
     if (b == null) throw new ArgumentNullException("b");
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= a.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().Low &lt;= b.Low);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= a.High);
-    Contract.Ensures(Contract.Result&lt;IntRange&gt;().High &gt;= b.High);
+    Contract.Ensures(Contract.Result<IntRange>().Low <= a.Low);
+    Contract.Ensures(Contract.Result<IntRange>().Low <= b.Low);
+    Contract.Ensures(Contract.Result<IntRange>().High >= a.High);
+    Contract.Ensures(Contract.Result<IntRange>().High >= b.High);
     return new IntRange(Math.Min(a.Low, b.Low), Math.Max(a.High, b.High));
 }
 ```
@@ -401,7 +401,7 @@ public class Matrix2 {
     public double E10;
     public double E11;
     public void Invert() {
-        Contract.EnsuresOnThrow&lt;NoInverseException&gt;(
+        Contract.EnsuresOnThrow<NoInverseException>(
             Contract.OldValue(E00).Equals(E00)
             && Contract.OldValue(E01).Equals(E01)
             && Contract.OldValue(E10).Equals(E10)
@@ -446,7 +446,7 @@ Similar to Contract.Requires, invariants are restricted from my release builds d
 ```csharp
 public class Range {
     public Range(double min, double max) {
-        if (!(min &lt;= max)) throw new ArgumentException();
+        if (!(min <= max)) throw new ArgumentException();
         Contract.EndContractBlock();
         Min = min;
         Max = max;
@@ -455,10 +455,10 @@ public class Range {
     public double Max { get; private set; }
     [ContractInvariantMethod]
     private void ObjectInvariants() {
-        Contract.Invariant(Min &lt;= Max);
+        Contract.Invariant(Min <= Max);
     }
     public double GetMagnitude(){
-        Contract.Ensures(Contract.Result&lt;double&gt;() &gt;= 0);
+        Contract.Ensures(Contract.Result<double>() >= 0);
         return Max - Min;
     }
 }
@@ -525,17 +525,17 @@ Also note that the LINQ methods <a href="https://msdn.microsoft.com/en-us/librar
 
 ```csharp
 private static int[] RandomIndices(int exclusiveLimit, int count) {
-    Contract.Requires(exclusiveLimit &gt; 0);
-    Contract.Requires(count &gt;= 0);
-    Contract.Ensures(Contract.Result&lt;int[]&gt;() != null);
-    Contract.Ensures(Contract.Result&lt;int[]&gt;().Length == count);
-    Contract.Ensures(Contract.ForAll(Contract.Result&lt;int[]&gt;(), x =&gt; x &gt;= 0));
-    Contract.Ensures(Contract.ForAll(Contract.Result&lt;int[]&gt;(), x =&gt; x &lt; exclusiveLimit));
+    Contract.Requires(exclusiveLimit > 0);
+    Contract.Requires(count >= 0);
+    Contract.Ensures(Contract.Result<int[]>() != null);
+    Contract.Ensures(Contract.Result<int[]>().Length == count);
+    Contract.Ensures(Contract.ForAll(Contract.Result<int[]>(), x => x >= 0));
+    Contract.Ensures(Contract.ForAll(Contract.Result<int[]>(), x => x < exclusiveLimit));
     var randomGenerator = new Random();
     var result = new int[count];
-    for (int i = 0; i &lt; result.Length; i++)
+    for (int i = 0; i < result.Length; i++)
         result[i] = randomGenerator.Next(exclusiveLimit);
-    Contract.Assume(Contract.ForAll(result, x =&gt; x &lt; exclusiveLimit));
+    Contract.Assume(Contract.ForAll(result, x => x < exclusiveLimit));
     return result;
 }
 ```
@@ -562,12 +562,12 @@ static void Main(string[] args) {
   Console.WriteLine(SwapLetters("ttxe", 1, 4));
 }
 // message : CodeContracts: Suggested requires: Contract.Requires(text != null);
-// message : CodeContracts: Suggested requires: Contract.Requires(0 &lt;= a);
-// message : CodeContracts: Suggested requires: Contract.Requires(0 &lt;= b);
+// message : CodeContracts: Suggested requires: Contract.Requires(0 <= a);
+// message : CodeContracts: Suggested requires: Contract.Requires(0 <= b);
 static string SwapLetters(string text, int a, int b) {
   var builder = new StringBuilder(text, text.Length);
-  var c = builder[a]; // warning : CodeContracts: requires unproven: index &lt; this.Length
-  builder[a] = builder[b]; // warning : CodeContracts: requires unproven: index &lt; this.Length
+  var c = builder[a]; // warning : CodeContracts: requires unproven: index < this.Length
+  builder[a] = builder[b]; // warning : CodeContracts: requires unproven: index < this.Length
   builder[b] = c;
   return builder.ToString();
 }
@@ -583,13 +583,13 @@ The error can be fixed by changing the <code>b</code> parameter value of <code>4
 // warning : CodeContracts: Invoking method 'Main' will always lead to an error.
 // If this is wanted, consider adding Contract.Requires(false) to document it
 static void Main(string[] args) {
-  // warning : CodeContracts: requires is false: b &gt;= 0 && b &lt; text.Length
+  // warning : CodeContracts: requires is false: b >= 0 && b < text.Length
   Console.WriteLine(SwapLetters("ttxe", 1, 4));
 }
 static string SwapLetters(string text, int a, int b) {
   Contract.Requires(text != null);
-  Contract.Requires(a &gt;= 0 && a &lt; text.Length);
-  Contract.Requires(b &gt;= 0 && b &lt; text.Length);
+  Contract.Requires(a >= 0 && a < text.Length);
+  Contract.Requires(b >= 0 && b < text.Length);
   var builder = new StringBuilder(text, text.Length);
   var c = builder[a];
   builder[a] = builder[b];
@@ -609,13 +609,13 @@ but we could also remove or change the ensures to fix the problem.
 static string FindLongest(string[] items) {
   Contract.Requires(items != null);
   // message : CodeContracts: Suggested requires: Contract.Requires(items.Length != 0);
-  Contract.Requires(Contract.ForAll(items, i =&gt; i != null));
-  Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+  Contract.Requires(Contract.ForAll(items, i => i != null));
+  Contract.Ensures(Contract.Result<string>() != null);
   if (items.Length == 0)
-    return null; // warning : CodeContracts: ensures is false: Contract.Result&lt;string&gt;() != null
+    return null; // warning : CodeContracts: ensures is false: Contract.Result<string>() != null
   var largest = items[0];
-  for (int i = 1; i &lt; items.Length; i++)
-    if (items[i].Length &gt; largest.Length)
+  for (int i = 1; i < items.Length; i++)
+    if (items[i].Length > largest.Length)
       largest = items[i];
   return largest;
 }
@@ -649,28 +649,28 @@ In this example the static analysis tool is not able to predict the size of the 
 
 ```csharp
 static string Multiply(string s, int n) {
-    Contract.Requires(n &gt;= 0);
+    Contract.Requires(n >= 0);
     Contract.Requires(s != null);
-    Contract.Ensures(Contract.Result&lt;string&gt;() != null);
-    Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+    Contract.Ensures(Contract.Result<string>() != null);
+    Contract.Ensures(Contract.Result<string>().Length == s.Length * n);
     var builder = new StringBuilder(s.Length * n);
-    for (int i = 0; i &lt; n; i++)
+    for (int i = 0; i < n; i++)
         builder.Append(s);
-    // CodeContracts: ensures unproven: Contract.Result&lt;string&gt;().Length == s.Length * n
+    // CodeContracts: ensures unproven: Contract.Result<string>().Length == s.Length * n
     return builder.ToString();
 }
 ```
 
 By using Contract.Assume we can tell the tool what we are certain is true.
 
-```sharp
+```csharp
 static string Multiply(string s, int n) {
-    Contract.Requires(n &gt;= 0);
+    Contract.Requires(n >= 0);
     Contract.Requires(s != null);
-    Contract.Ensures(Contract.Result&lt;string&gt;() != null);
-    Contract.Ensures(Contract.Result&lt;string&gt;().Length == s.Length * n);
+    Contract.Ensures(Contract.Result<string>() != null);
+    Contract.Ensures(Contract.Result<string>().Length == s.Length * n);
     var builder = new StringBuilder(s.Length * n);
-    for (int i = 0; i &lt; n; i++)
+    for (int i = 0; i < n; i++)
         builder.Append(s);
     Contract.Assume(builder.ToString().Length == s.Length * n); // fix
     return builder.ToString();
@@ -686,7 +686,7 @@ Sadly there is no direct way to do this with Code Contracts but there are ways a
 ```csharp
 public static Response Request(string search) {
     if (!String.IsNullOrWhiteSpace(search)) {
-        Func&lt;string, bool&gt; test =
+        Func<string, bool> test =
             new Regex(search, RegexOptions.IgnoreCase).IsMatch;
         var foodsFound = FoodList.Where(test).ToArray();
         if (foodsFound.Length != 0)
@@ -815,7 +815,7 @@ Don't worry about forgetting an attribute or referencing the wrong type though a
 [ContractClass(typeof(NoiseMakerContracts))]
 public abstract class NoiseMaker {
     public string LoudNoise() {
-        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        Contract.Ensures(Contract.Result<string>() != null);
         return Noise().ToUpper();
     }
     public abstract string Noise();
@@ -823,7 +823,7 @@ public abstract class NoiseMaker {
 [ContractClassFor(typeof(NoiseMaker))]
 internal abstract class NoiseMakerContracts : NoiseMaker {
     public override string Noise() {
-        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        Contract.Ensures(Contract.Result<string>() != null);
         throw new NotImplementedException();
     }
 }
@@ -834,7 +834,7 @@ public class Screech : NoiseMaker{
 }
 public class Nope : NoiseMaker {
     public override string Noise() {
-        return null; // ensures is false: Contract.Result&lt;string&gt;() != null
+        return null; // ensures is false: Contract.Result<string>() != null
     }
 }
 ```
@@ -854,8 +854,8 @@ public interface ISomeInterface {
 [ContractClassFor(typeof(ISomeInterface))]
 internal abstract class SomeInterfaceContracts : ISomeInterface {
     public string TopValue(int n) {
-        Contract.Requires(n &gt;= 0);
-        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        Contract.Requires(n >= 0);
+        Contract.Ensures(Contract.Result<string>() != null);
         throw new NotImplementedException();
     }
 }
@@ -866,7 +866,7 @@ public interface IExtraStuff : ISomeInterface {
 [ContractClassFor(typeof(IExtraStuff))]
 internal abstract class ExtraStuffContracts : IExtraStuff {
     public int GetNumber() {
-        Contract.Ensures(Contract.Result&lt;int&gt;() &gt;= 0);
+        Contract.Ensures(Contract.Result<int>() >= 0);
         throw new NotImplementedException();
     }
     public abstract string TopValue(int n);
@@ -881,7 +881,7 @@ public abstract class SomeBase {
 internal abstract class SomeBaseContracts : SomeBase {
     public override string ImportantStuff(string input) {
         Contract.Requires(input != null);
-        Contract.Ensures(Contract.Result&lt;string&gt;() != null);
+        Contract.Ensures(Contract.Result<string>() != null);
         throw new NotImplementedException();
     }
     public abstract override string NobodyCares();

@@ -164,7 +164,7 @@ public class MyStuff {
 // ...
 public class DoesStuff {
 	public void ProcessThings(IEnumerable things){
-		var myStuff = Shell.Instance.GetComponent&lt;MyStuff&gt;();
+		var myStuff = Shell.Instance.GetComponent<MyStuff>();
 		// do stuff...
 	}
 }
@@ -184,7 +184,7 @@ public class MyStuff {
 	private static WeakReference _mostRecentInstance;
 	public static MyStuff Instance {
 		get {
-			var instance = Shell.Instance.GetComponent&lt;MyStuff&gt;();
+			var instance = Shell.Instance.GetComponent<MyStuff>();
 			return (null == instance && null != _mostRecentInstance)
 				? _mostRecentInstance.Target as MyStuff // dirty hack
 				: instance;
@@ -260,8 +260,8 @@ public static ICSharpFile GetCSharpFile(IPsiSourceFile sourceFile) {
 #if RSHARP6
 	return sourceFile.GetPsiFile(CSharpLanguage.Instance) as ICSharpFile;
 #else
-	return sourceFile.GetPsiFiles&lt;CSharpLanguage&gt;()
-		.OfType&lt;ICSharpFile&gt;().SingleOrDefault();
+	return sourceFile.GetPsiFiles<CSharpLanguage>()
+		.OfType<ICSharpFile>().SingleOrDefault();
 #endif
 }
 ```
@@ -409,7 +409,7 @@ You define an index entry like in the following example.
 [SettingsKey(typeof(EnvironmentSettings), "My Settings")]
 public class MySettings {
 	[SettingsIndexedEntryAttribute("Some Names")]
-	public IIndexedEntry&lt;string, byte&gt; SomeNames { get; set; }
+	public IIndexedEntry<string, byte> SomeNames { get; set; }
 }
 ```
 
@@ -418,7 +418,7 @@ You can then enumerate and modify the settings collection like the next example.
 ```csharp
 // read all
 var someWords = settings
-	.EnumEntryIndices&lt;SpellCheckSettings, string, byte&gt;(x => x.SomeNames)
+	.EnumEntryIndices<SpellCheckSettings, string, byte>(x => x.SomeNames)
 // set an item
 settings.SetIndexedValue((MySettings x) => x.SomeNames, name, default(byte));
 // remove an item
@@ -490,7 +490,7 @@ public class MyQuickFix : IQuickFix {
 			"Stuff"
 		));
 		subMenu.Submenu.ArrangeQuickFixes(Items
-			.Select(x => new Pair&lt;IBulbAction, Severity&gt;(x,severity)));
+			.Select(x => new Pair<IBulbAction, Severity>(x,severity)));
 	}
 	// ...
 }
